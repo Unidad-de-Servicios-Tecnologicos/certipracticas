@@ -1,5 +1,6 @@
 import type { Letter } from '@/types/letter';
 import {
+  buildActivitiesIntro,
   buildBodyParagraph,
   buildClassificationLabel,
   buildSubtitle,
@@ -107,9 +108,7 @@ export function SenaTemplate({ letter }: SenaTemplateProps) {
           <p className="mb-6 indent-0">{buildBodyParagraph(letter)}</p>
 
           <div className="mb-6">
-            <p className="mb-2">
-              Dentro de las actividades realizadas por la practicante en la {letter.period.area} se encuentran:
-            </p>
+            <p className="mb-2">{buildActivitiesIntro(letter)}</p>
             <ul className="list-[square] pl-12 space-y-1">
               {tasks.map((t, i) => (
                 <li key={i}>{t}</li>

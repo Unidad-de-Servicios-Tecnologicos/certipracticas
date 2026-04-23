@@ -14,6 +14,11 @@ export const DOCUMENT_TYPES = [
   { value: 'C.E.', label: 'C.E. — Cédula de Extranjería' },
 ] as const;
 
+export const GENDER_OPTIONS = [
+  { value: 'F', label: 'Femenino' },
+  { value: 'M', label: 'Masculino' },
+] as const;
+
 export const CLASSIFICATION_OPTIONS = [
   { value: 'public', label: 'Pública' },
   { value: 'classified', label: 'Clasificada' },

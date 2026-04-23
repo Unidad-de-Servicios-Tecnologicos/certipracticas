@@ -180,6 +180,9 @@ export const useFormStore = create<FormStore>()(
             state.letter.period.endDate = emptyLetter.period.endDate;
           }
         }
+        if (state.letter && state.letter.intern && !state.letter.intern.gender) {
+          state.letter.intern.gender = emptyLetter.intern.gender;
+        }
         return state;
       },
     }

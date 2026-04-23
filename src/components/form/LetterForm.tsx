@@ -22,13 +22,13 @@ import { Button } from '@/components/ui/Button';
 import { AiGenerateButton } from './AiGenerateButton';
 import { useFormStore } from '@/store/useFormStore';
 import { useAutosave } from '@/hooks/useAutosave';
-import { CLASSIFICATION_OPTIONS, DOCUMENT_TYPES } from '@/data/constants';
+import { CLASSIFICATION_OPTIONS, DOCUMENT_TYPES, GENDER_OPTIONS } from '@/data/constants';
 import { sampleLetter } from '@/data/defaultLetter';
 import { validateLetter } from '@/services/validators';
 import { generateContent } from '@/services/aiService';
 import { notify } from '@/utils/toast';
 import type { Classification } from '@/types/metadata';
-import type { DocumentType } from '@/types/intern';
+import type { DocumentType, Gender } from '@/types/intern';
 
 export function LetterForm() {
   const letter = useFormStore((s) => s.letter);
@@ -146,6 +146,12 @@ export function LetterForm() {
           onChange={(v) => setIntern({ fullName: v })}
           required
           error={errors['intern.fullName']}
+        />
+        <SelectField
+          label="Género"
+          value={letter.intern.gender}
+          onChange={(v) => setIntern({ gender: v as Gender })}
+          options={GENDER_OPTIONS}
         />
         <SelectField
           label="Tipo de documento"

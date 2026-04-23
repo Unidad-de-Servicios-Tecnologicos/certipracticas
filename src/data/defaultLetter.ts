@@ -4,6 +4,7 @@ import { todayISO, sixMonthsAgoISO } from '@/utils/formatDate';
 export const emptyLetter: Letter = {
   intern: {
     fullName: '',
+    gender: 'F',
     documentType: 'C.C.',
     documentNumber: '',
     documentCity: '',
@@ -54,6 +55,7 @@ export const emptyLetter: Letter = {
 export const sampleLetter: Letter = {
   intern: {
     fullName: 'Isabela Zapata Galeano',
+    gender: 'F',
     documentType: 'C.C.',
     documentNumber: '1.033.649.611',
     documentCity: 'Medellín',

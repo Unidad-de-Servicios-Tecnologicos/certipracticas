@@ -16,6 +16,7 @@ import { saveAs } from 'file-saver';
 import type { Letter } from '@/types/letter';
 import { formatDateFileSafe, formatDateShort } from '@/utils/formatDate';
 import { buildLetterFilename } from '@/utils/fileDownload';
+import { getGenderTerms } from '@/services/letterFormatter';
 
 function val(value: string | undefined | null, fieldName: string): string {
   return value && value.trim() !== '' ? value : `[${fieldName}]`;
@@ -58,9 +59,10 @@ export async function exportLetterAsDOCX(letter: Letter): Promise<void> {
   const isClassified = metadata.classification === 'classified';
   const isReserved = metadata.classification === 'reserved';
 
+  const terms = getGenderTerms(intern.gender);
   const Title = `CERTIFICACIÓN DE EJECUCIÓN DE ETAPA PRODUCTIVA EN EL ${val(center.name, 'Nombre del centro').toUpperCase()}`;
   const Subtitle = `EL ${val(signer.position, 'Cargo').toUpperCase()} DEL ${val(center.name, 'Nombre del centro').toUpperCase()}, REGIONAL ${val(center.regional, 'Regional').toUpperCase()} DEL SENA, HACE CONSTAR:`;
-  const Body = `Que, cumplidos ${val(period.duration, 'Duración')} desde el ${val(formatDateShort(period.startDate), 'Fecha de inicio')} al ${val(formatDateShort(period.endDate), 'Fecha fin')}, la joven ${val(intern.fullName, 'Nombre completo')}, identificada con ${val(intern.documentType, 'Tipo de documento')}: ${val(intern.documentNumber, 'Número de documento')} expedida en ${val(intern.documentCity, 'Ciudad de expedición')}, finalizó su proceso de etapa productiva bajo la modalidad de ${val(period.modality, 'Modalidad')}, en el ${val(center.name, 'Nombre del centro')} donde desarrolló su práctica en la ${val(period.unit, 'Unidad')} en el área de ${val(period.area, 'Área')} como ${val(intern.program, 'Programa')} del ${val(center.name, 'Nombre del centro')}.`;
+  const Body = `Que, cumplidos ${val(period.duration, 'Duración')} desde el ${val(formatDateShort(period.startDate), 'Fecha de inicio')} al ${val(formatDateShort(period.endDate), 'Fecha fin')}, ${terms.joven} ${val(intern.fullName, 'Nombre completo')}, ${terms.identificado} con ${val(intern.documentType, 'Tipo de documento')}: ${val(intern.documentNumber, 'Número de documento')} ${terms.expedida} en ${val(intern.documentCity, 'Ciudad de expedición')}, finalizó su proceso de etapa productiva bajo la modalidad de ${val(period.modality, 'Modalidad')}, en el ${val(center.name, 'Nombre del centro')} donde desarrolló su práctica en la ${val(period.unit, 'Unidad')} en el área de ${val(period.area, 'Área')} como ${val(intern.program, 'Programa')} del ${val(center.name, 'Nombre del centro')}.`;
 
   const solidBorder = { style: BorderStyle.SINGLE, size: 1, color: "000000" };
 
@@ -113,7 +115,7 @@ export async function exportLetterAsDOCX(letter: Letter): Promise<void> {
     emptyBr(),
     p(Body, { align: AlignmentType.JUSTIFIED, size: 22 }),
     emptyBr(),
-    p(`Dentro de las actividades realizadas por la practicante en la ${val(period.area, 'Área')} se encuentran:`, { size: 22 }),
+    p(`Dentro de las actividades realizadas por ${terms.practicante} en la ${val(period.area, 'Área')} se encuentran:`, { size: 22 }),
     emptyBr(),
     ...tasks.map((t) => new Paragraph({ bullet: { level: 0 }, children: [new TextRun({ text: t, size: 22 })] })),
     emptyBr(),
