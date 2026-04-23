@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx skills:*)",
+      "Bash(npm create:*)",
+      "Bash(cp /tmp/certipracticas-temp/index.html /c/laragon/www/carta/)",
+      "Bash(cp /tmp/certipracticas-temp/package.json /c/laragon/www/carta/)",
+      "Bash(cp /tmp/certipracticas-temp/tsconfig.json /c/laragon/www/carta/)",
+      "Bash(cp -r /tmp/certipracticas-temp/public /c/laragon/www/carta/)",
+      "Bash(cp -r /tmp/certipracticas-temp/src /c/laragon/www/carta/)",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(npm audit *)",
+      "Bash(npm run *)",
+      "mcp__claude_ai_Context7__resolve-library-id",
+      "mcp__claude_ai_Context7__query-docs",
+      "Bash(git add *)"
+    ]
+  }
+}

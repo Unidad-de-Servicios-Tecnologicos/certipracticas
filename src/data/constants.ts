@@ -1,0 +1,23 @@
+export const APP_NAME = 'CertiPrácticas SENA';
+export const APP_TAGLINE = 'Generador de Cartas para Etapa Productiva';
+
+export const STORAGE_KEYS = {
+  form: 'certipracticas.form',
+  templates: 'certipracticas.templates',
+  activeTemplate: 'certipracticas.activeTemplate',
+  theme: 'certipracticas.theme',
+} as const;
+
+export const DOCUMENT_TYPES = [
+  { value: 'C.C.', label: 'C.C. — Cédula de Ciudadanía' },
+  { value: 'T.I.', label: 'T.I. — Tarjeta de Identidad' },
+  { value: 'C.E.', label: 'C.E. — Cédula de Extranjería' },
+] as const;
+
+export const CLASSIFICATION_OPTIONS = [
+  { value: 'public', label: 'Pública' },
+  { value: 'classified', label: 'Clasificada' },
+  { value: 'reserved', label: 'Reservada' },
+] as const;
+
+export const MIC_SILENCE_MS = 3000;

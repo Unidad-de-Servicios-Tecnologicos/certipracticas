@@ -1,0 +1,47 @@
+{
+  "name": "CertiPrácticas",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Forja cartas profesionales con precisión — Generador de Certificaciones de Etapa Productiva del SENA",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@google/genai": "^1.50.1",
+    "clsx": "^2.1.1",
+    "docx": "^9.0.0",
+    "file-saver": "^2.0.5",
+    "html-to-image": "^1.11.13",
+    "jspdf": "^4.2.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.6.0",
+    "react-icons": "^5.4.0",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/file-saver": "^2.0.7",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react-swc": "^3.7.2",
+    "@vitest/coverage-v8": "^2.1.8",
+    "jsdom": "^25.0.1",
+    "pdf-parse": "^2.4.5",
+    "pdf2json": "^4.0.3",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3",
+    "vitest": "^2.1.8"
+  }
+}

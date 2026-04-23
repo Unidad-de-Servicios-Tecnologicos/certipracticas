@@ -1,0 +1,13 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_AI_PROVIDER: ${VITE_AI_PROVIDER:-gemini}
+        VITE_GEMINI_API_KEY: ${VITE_GEMINI_API_KEY:-}
+    image: certipracticas:latest
+    container_name: certipracticas
+    ports:
+      - "8080:80"
+    restart: unless-stopped
