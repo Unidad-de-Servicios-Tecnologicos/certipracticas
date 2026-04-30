@@ -12,6 +12,8 @@ export const DOCUMENT_TYPES = [
   { value: 'C.C.', label: 'C.C. — Cédula de Ciudadanía' },
   { value: 'T.I.', label: 'T.I. — Tarjeta de Identidad' },
   { value: 'C.E.', label: 'C.E. — Cédula de Extranjería' },
+  { value: 'P.A.', label: 'P.A. — Pasaporte' },
+  { value: 'O.T.', label: 'O.T. — Otro' },
 ] as const;
 
 export const GENDER_OPTIONS = [

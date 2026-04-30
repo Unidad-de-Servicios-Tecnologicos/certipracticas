@@ -2,12 +2,10 @@ import { useMemo } from 'react';
 import {
   FaBuilding,
   FaCalendarAlt,
-  FaChartBar,
   FaFileAlt,
   FaListUl,
   FaPen,
   FaSignature,
-  FaStar,
   FaUser,
   FaUserTie,
 } from 'react-icons/fa';
@@ -17,7 +15,6 @@ import { DateField } from './DateField';
 import { SelectField } from './SelectField';
 import { ListTextarea } from './ListTextarea';
 import { MicButton } from './MicButton';
-import { Textarea } from '@/components/ui/Textarea';
 import { Button } from '@/components/ui/Button';
 import { AiGenerateButton } from './AiGenerateButton';
 import { useFormStore } from '@/store/useFormStore';
@@ -39,86 +36,28 @@ export function LetterForm() {
   const setSigner = useFormStore((s) => s.setSigner);
   const setDrafter = useFormStore((s) => s.setDrafter);
   const setMetadata = useFormStore((s) => s.setMetadata);
-  const setPerformanceReview = useFormStore((s) => s.setPerformanceReview);
   const setTasks = useFormStore((s) => s.setTasks);
-  const setStrengths = useFormStore((s) => s.setStrengths);
   const reset = useFormStore((s) => s.reset);
   const loadSample = useFormStore((s) => s.loadSample);
 
   const saveStatus = useAutosave(letter);
   const errors = useMemo(() => validateLetter(letter), [letter]);
 
-  const handleGenerateStrengths = async () => {
+  const handleGenerateProjects = async () => {
     if (!letter.intern.program) {
       notify.info('Ingresa el programa de formación del practicante primero.');
       return;
     }
-    const loadingId = notify.loading('Generando fortalezas…');
+    const loadingId = notify.loading('Generando proyectos…');
     try {
-      const text = await generateContent({ programName: letter.intern.program, type: 'strengths' });
-      const items = text.split(/\n+/).map((item) => item.trim()).filter(Boolean);
-      if (items.length > 0) setStrengths(items);
-      notify.dismiss(loadingId);
-      notify.success('Fortalezas generadas.');
-    } catch (error: any) {
-      notify.dismiss(loadingId);
-      notify.error(error.message ?? 'Error al generar fortalezas.');
-    }
-  };
-
-  const handleGenerateActivities = async () => {
-    if (!letter.intern.program) {
-      notify.info('Ingresa el programa de formación del practicante primero.');
-      return;
-    }
-    if (letter.activities.technicalStrengths.length === 0) {
-      notify.info('Genera o ingresa primero las fortalezas técnicas.');
-      return;
-    }
-    const loadingId = notify.loading('Generando actividades…');
-    try {
-      const text = await generateContent({
-        programName: letter.intern.program,
-        type: 'activities',
-        strengths: letter.activities.technicalStrengths,
-      });
+      const text = await generateContent({ programName: letter.intern.program, type: 'projects' });
       const items = text.split(/\n+/).map((item) => item.trim()).filter(Boolean);
       if (items.length > 0) setTasks(items);
       notify.dismiss(loadingId);
-      notify.success('Actividades generadas.');
+      notify.success('Proyectos generados.');
     } catch (error: any) {
       notify.dismiss(loadingId);
-      notify.error(error.message ?? 'Error al generar actividades.');
-    }
-  };
-
-  const handleGenerateReview = async () => {
-    if (!letter.intern.program) {
-      notify.info('Ingresa el programa de formación del practicante primero.');
-      return;
-    }
-    if (letter.activities.technicalStrengths.length === 0) {
-      notify.info('Genera o ingresa primero las fortalezas técnicas.');
-      return;
-    }
-    if (letter.activities.tasks.length === 0) {
-      notify.info('Genera o ingresa primero las actividades.');
-      return;
-    }
-    const loadingId = notify.loading('Generando evaluación…');
-    try {
-      const text = await generateContent({
-        programName: letter.intern.program,
-        type: 'performanceReview',
-        strengths: letter.activities.technicalStrengths,
-        activities: letter.activities.tasks,
-      });
-      setPerformanceReview(text);
-      notify.dismiss(loadingId);
-      notify.success('Evaluación generada.');
-    } catch (error: any) {
-      notify.dismiss(loadingId);
-      notify.error(error.message ?? 'Error al generar evaluación.');
+      notify.error(error.message ?? 'Error al generar proyectos.');
     }
   };
 
@@ -192,71 +131,38 @@ export function LetterForm() {
       </FormSection>
 
       <FormSection title="Período" icon={<FaCalendarAlt className="text-[var(--color-accent)]" />}>
-        <TextField label="Duración" value={letter.period.duration} onChange={(v) => setPeriod({ duration: v })} required />
         <DateField label="Fecha de inicio" value={letter.period.startDate} onChange={(v) => setPeriod({ startDate: v })} required error={errors['period.startDate']} />
         <DateField label="Fecha de fin" value={letter.period.endDate} onChange={(v) => setPeriod({ endDate: v })} required error={errors['period.endDate']} />
         <TextField label="Modalidad" value={letter.period.modality} onChange={(v) => setPeriod({ modality: v })} />
-        <TextField label="Unidad" value={letter.period.unit} onChange={(v) => setPeriod({ unit: v })} required />
-        <TextField label="Área" value={letter.period.area} onChange={(v) => setPeriod({ area: v })} required />
+        <TextField label="Nodo Tecnoparque" value={letter.period.area} onChange={(v) => setPeriod({ area: v })} required />
       </FormSection>
 
-      <FormSection title="Fortalezas técnicas" icon={<FaStar className="text-[var(--color-accent)]" />}>
+      <FormSection title="Proyectos" icon={<FaListUl className="text-[var(--color-accent)]" />}>
         <AiGenerateButton
-          onGenerate={handleGenerateStrengths}
-          description="Extrae las fortalezas clave automáticamente"
+          onGenerate={handleGenerateProjects}
+          description="Genera proyectos sugeridos según el programa de formación"
           disabled={!letter.intern.program}
-        />
-        <ListTextarea
-          items={letter.activities.technicalStrengths}
-          onChange={setStrengths}
-          placeholder="React, Node.js, …"
-          error={errors['activities.technicalStrengths']}
-        />
-      </FormSection>
-
-      <FormSection title="Actividades" icon={<FaListUl className="text-[var(--color-accent)]" />}>
-        <AiGenerateButton
-          onGenerate={handleGenerateActivities}
-          description="Genera actividades a partir del programa y las fortalezas técnicas"
-          disabled={!letter.intern.program || letter.activities.technicalStrengths.length === 0}
         />
         <ListTextarea
           items={letter.activities.tasks}
           onChange={setTasks}
-          placeholder="Especificar requisitos funcionales…"
+          placeholder="P2023-XXXXX-XXXXX – Nombre: descripción del proyecto…"
           error={errors['activities.tasks']}
-        />
-      </FormSection>
-
-      <FormSection title="Evaluación" icon={<FaChartBar className="text-[var(--color-accent)]" />}>
-        <AiGenerateButton
-          onGenerate={handleGenerateReview}
-          description="Genera la evaluación a partir del programa, fortalezas y actividades"
-          disabled={
-            !letter.intern.program ||
-            letter.activities.technicalStrengths.length === 0 ||
-            letter.activities.tasks.length === 0
-          }
-        />
-        <Textarea
-          label="Evaluación general del desempeño"
-          value={letter.activities.performanceReview}
-          onChange={(e) => setPerformanceReview(e.target.value)}
-          rows={5}
-          required
-          error={errors['activities.performanceReview']}
           rightSlot={
             <div className="mt-2 mr-2">
               <MicButton
-                value={letter.activities.performanceReview}
-                onChange={setPerformanceReview}
+                value={letter.activities.tasks.filter((t) => t.trim()).join('\n')}
+                onChange={(v) => {
+                  const items = v.split(/\n+/).map((s) => s.trim()).filter(Boolean);
+                  setTasks(items.length > 0 ? items : ['']);
+                }}
               />
             </div>
           }
         />
       </FormSection>
 
-      <FormSection title="Instructor" icon={<FaUserTie className="text-[var(--color-accent)]" />} defaultOpen={false}>
+      <FormSection title="Experto de contacto" icon={<FaUserTie className="text-[var(--color-accent)]" />} defaultOpen={false}>
         <TextField label="Nombre completo" value={letter.instructor.fullName} onChange={(v) => setInstructor({ fullName: v })} required />
         <TextField label="Teléfono" value={letter.instructor.phone} onChange={(v) => setInstructor({ phone: v })} />
         <TextField label="Correo" value={letter.instructor.email} onChange={(v) => setInstructor({ email: v })} error={errors['instructor.email']} />

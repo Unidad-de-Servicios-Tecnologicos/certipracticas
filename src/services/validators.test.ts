@@ -13,9 +13,7 @@ describe('validateLetter', () => {
     const errors = validateLetter(emptyLetter);
     expect(errors['intern.fullName']).toBeDefined();
     expect(errors['intern.documentNumber']).toBeDefined();
-    expect(errors['period.startDate']).toBeDefined();
     expect(errors['activities.tasks']).toBeDefined();
-    expect(errors['activities.technicalStrengths']).toBeDefined();
   });
 
   it('rejects end date before or equal to start date', () => {

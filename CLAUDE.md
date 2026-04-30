@@ -1,4 +1,6 @@
-# CLAUDE.md — CertiPrácticas 
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Proyecto
 **CertiPrácticas** — "Forja cartas profesionales con precisión".
@@ -11,13 +13,29 @@ Aplicación web client-side para generar Certificaciones de Ejecución de Etapa 
 - **Web Speech API** — dictado por voz
 - **jspdf** + **html-to-image** — exportación PDF
 - **docx** + **file-saver** — exportación DOCX
+- **react-hot-toast** (vía `utils/toast.ts` como `notify`) — notificaciones
+- **react-icons** — iconografía
 - **Vitest** + **React Testing Library** + **jsdom** — testing
-- **Gemini API** (con extensión a OpenAI/Anthropic) — generación asistida
+- **Gemini API** (`@google/genai`) — generación asistida (OpenAI/Anthropic pendientes)
 
 ## Idioma
 - UI en **español**
 - Código (variables, comentarios, commits) en **inglés**
 - Documentación de proyecto en **español**
+
+## Comandos
+```bash
+npm run dev          # Servidor de desarrollo (Vite)
+npm run build        # Build de producción (tsc -b && vite build)
+npm run preview      # Previsualizar build
+npm run test         # Tests en modo watch
+npm run test:run     # Tests una vez
+npm run test:coverage # Reporte de cobertura
+npm run lint         # Type check (tsc --noEmit)
+
+# Ejecutar un solo archivo de test
+npx vitest run src/services/validators.test.ts
+```
 
 ## Arquitectura
 
@@ -34,7 +52,7 @@ src/
 ├── services/       → Lógica pura: aiService, pdfExporter, docxExporter, validators, letterFormatter, speechService, storageService
 ├── store/          → useFormStore, useAppStore (Zustand)
 ├── types/          → Interfaces del dominio: letter, intern, center, period, instructor, signer, drafter, activities, metadata
-├── utils/          → cn, fileDownload, formatDate
+├── utils/          → cn, fileDownload, formatDate, toast
 └── test/           → Setup global de testing
 ```
 
@@ -59,33 +77,32 @@ src/
 - Alias de importación `@/` apunta a `src/`.
 
 ## State Management
-- **`useFormStore`** — Datos del formulario: aprendiz, centro de formación, periodo, actividades, fortalezas técnicas, evaluación, instructor, firmante, proyectó, metadata.
-- **`useAppStore`** — Estado de UI: panel activo, modales, notificaciones, tema.
+- **`useFormStore`** — Datos del formulario con `persist` a `localStorage`. Contiene: aprendiz, centro de formación, periodo, actividades, fortalezas técnicas, evaluación, instructor, firmante, proyectó, metadata.
+- **`useAppStore`** — Estado de UI sin persistencia: zoom, micFieldId activo, isExporting, tema.
+
+### Comportamientos no obvios del store
+- `setPeriod`: cuando cambia `duration` o `endDate`, recalcula `startDate` automáticamente restando meses.
+- `updateTask` / `updateStrength`: si el valor contiene `\n` o ` - `, hace split automático e inserta múltiples ítems en la lista (soporte para pegar texto con viñetas).
+- `useFormStore` tiene un `merge` personalizado al rehidratar desde localStorage que restaura campos faltantes (`documentNumber`, `issueDate`, `startDate`, `endDate`, `gender`) a sus valores por defecto si no existen en el estado persistido.
 
 ## Plantilla de referencia
-- Formato: Certificación de Ejecución de Etapa Productiva del SENA.
 - Componente: `src/components/preview/templates/SenaTemplate.tsx`.
-- Estructura: 2 páginas con logo SENA, clasificación de información, cuerpo de certificación, actividades, fortalezas técnicas, evaluación, firma y pie de página.
+- Estructura: 2 páginas marcadas con `data-letter-page`; el `pdfExporter` usa ese atributo para capturar cada página independientemente.
+- Todo el texto de la carta se construye mediante funciones puras en `src/services/letterFormatter.ts`. La función `val(value, fieldName)` devuelve el valor o `[fieldName]` como placeholder si está vacío.
 
 ## Variables de entorno
 Definidas en `.env` (ver `.env.example`):
 - `VITE_AI_PROVIDER` — `gemini` | `openai` | `anthropic` (solo `gemini` implementado).
 - `VITE_GEMINI_API_KEY` — API key de Gemini (requerido si `VITE_AI_PROVIDER=gemini`).
+- `VITE_GEMINI_MODEL` — Modelo a usar; por defecto `gemini-2.5-flash`.
+
+> **Seguridad**: Las `VITE_*` se compilan en el bundle público. Para producción, restringir la API key por HTTP referrer en Google Cloud Console.
 
 ## Testing
-- Escribir tests antes de implementar (TDD).
 - Vitest (API compatible con Jest).
-- Mockear Web Speech API con `vi.fn()`.
+- `src/test/setup.ts` provee mocks globales de Web Speech API (`SpeechRecognition`, `webkitSpeechRecognition`) y `window.matchMedia`.
+- Los tests de Zustand usan `useFormStore.setState(...)` directamente, sin wrappers de React.
 - Archivos: `ComponentName.test.tsx` o `hookName.test.ts` junto al fuente.
-
-## Comandos
-- `npm run dev` — Servidor de desarrollo (Vite).
-- `npm run build` — Build de producción (`tsc -b && vite build`).
-- `npm run preview` — Previsualizar build.
-- `npm run test` — Tests en modo watch.
-- `npm run test:run` — Tests una vez.
-- `npm run test:coverage` — Reporte de cobertura.
-- `npm run lint` — Type check (`tsc --noEmit`).
 
 ## Docker
 - `docker compose up --build` — Build y arranque del contenedor (sirve en `http://localhost:8080`).

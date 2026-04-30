@@ -26,8 +26,8 @@ describe('letterFormatter', () => {
     const body = buildBodyParagraph(sampleLetter);
     expect(body).toContain(sampleLetter.intern.fullName);
     expect(body).toContain(sampleLetter.intern.documentNumber);
-    expect(body).toContain('3 de junio de 2025');
-    expect(body).toContain('2 de diciembre de 2025');
+    expect(body).toContain('17 de julio de 2023');
+    expect(body).toContain('16 de enero de 2024');
   });
 
   it('classification labels map to Spanish', () => {

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 80">
+  <!-- Badge outer ring -->
+  <circle cx="40" cy="40" r="36" fill="white" stroke="#777" stroke-width="1.8"/>
+  <!-- Badge inner ring (decorative) -->
+  <circle cx="40" cy="40" r="30" fill="none" stroke="#bbb" stroke-width="0.8"/>
+
+  <!-- Simplified Colombian coat of arms shield -->
+  <defs>
+    <clipPath id="sc">
+      <path d="M21,17 L59,17 L59,54 Q40,67 21,54 Z"/>
+    </clipPath>
+  </defs>
+  <!-- Blue band (top) -->
+  <rect x="21" y="17" width="38" height="13" clip-path="url(#sc)" fill="#1a3f8f"/>
+  <!-- Yellow band (middle) -->
+  <rect x="21" y="30" width="38" height="12" clip-path="url(#sc)" fill="#FFD700"/>
+  <!-- Red band (bottom) -->
+  <rect x="21" y="42" width="38" height="25" clip-path="url(#sc)" fill="#BF0A2C"/>
+  <!-- Shield outline -->
+  <path d="M21,17 L59,17 L59,54 Q40,67 21,54 Z" fill="none" stroke="#555" stroke-width="1.3"/>
+
+  <!-- Institution name text -->
+  <text x="88" y="34" font-size="11" font-family="Arial, Helvetica, sans-serif" font-weight="bold" fill="#444">MINISTERIO</text>
+  <text x="88" y="48" font-size="11" font-family="Arial, Helvetica, sans-serif" font-weight="bold" fill="#444">DEL TRABAJO</text>
+</svg>

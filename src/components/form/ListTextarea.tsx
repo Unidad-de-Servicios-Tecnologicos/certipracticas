@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import { Textarea } from '@/components/ui/Textarea';
 
 interface ListTextareaProps {
@@ -7,9 +8,10 @@ interface ListTextareaProps {
   placeholder?: string;
   label?: string;
   error?: string;
+  rightSlot?: ReactNode;
 }
 
-export function ListTextarea({ items, onChange, placeholder, label, error }: ListTextareaProps) {
+export function ListTextarea({ items, onChange, placeholder, label, error, rightSlot }: ListTextareaProps) {
   const [text, setText] = useState('');
 
   useEffect(() => {
@@ -40,6 +42,7 @@ export function ListTextarea({ items, onChange, placeholder, label, error }: Lis
       placeholder={placeholder}
       error={error}
       rows={5}
+      rightSlot={rightSlot}
     />
   );
 }

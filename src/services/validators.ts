@@ -26,14 +26,7 @@ export function validateLetter(letter: Letter): ValidationErrors {
   }
 
   const tasks = letter.activities.tasks.filter((t) => t.trim().length > 0);
-  if (tasks.length === 0) errors['activities.tasks'] = 'Agrega al menos 1 actividad';
-
-  const strengths = letter.activities.technicalStrengths.filter((s) => s.trim().length > 0);
-  if (strengths.length === 0)
-    errors['activities.technicalStrengths'] = 'Agrega al menos 1 fortaleza técnica';
-
-  if (!letter.activities.performanceReview.trim())
-    errors['activities.performanceReview'] = 'Evaluación requerida';
+  if (tasks.length === 0) errors['activities.tasks'] = 'Agrega al menos 1 proyecto';
 
   if (!letter.instructor.fullName.trim()) errors['instructor.fullName'] = 'Nombre requerido';
   if (letter.instructor.email && !/^\S+@\S+\.\S+$/.test(letter.instructor.email)) {

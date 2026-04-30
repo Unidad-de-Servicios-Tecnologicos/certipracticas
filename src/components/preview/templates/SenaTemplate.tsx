@@ -1,75 +1,88 @@
 import type { Letter } from '@/types/letter';
-import {
-  buildActivitiesIntro,
-  buildBodyParagraph,
-  buildClassificationLabel,
-  buildSubtitle,
-  buildTitle,
-} from '@/services/letterFormatter';
+import { getGenderTerms } from '@/services/letterFormatter';
 import { isEmailValid } from '@/services/validators';
-import { formatDateLong, formatDateShort } from '@/utils/formatDate';
+import { formatDateLong } from '@/utils/formatDate';
+import { FaInstagram, FaFacebook, FaYoutube, FaLinkedinIn } from 'react-icons/fa';
+import { FaXTwitter } from 'react-icons/fa6';
 
 const PAGE_STYLE =
-  'relative mx-auto bg-white text-black shadow-md print:shadow-none w-[794px] min-h-[1123px] px-24 py-16 font-sans text-[15px]';
+  'relative mx-auto bg-white text-black shadow-md print:shadow-none w-[794px] min-h-[1123px] px-[96px] pt-12 pb-[130px] font-sans text-[14px]';
 
-function SenaLogo() {
+function CenteredLogoHeader() {
   return (
-    <img src="/logo.png" alt="SENA" className="h-[75px] w-auto mx-auto" />
+    <div className="w-full flex justify-center mb-8">
+      <img src="/logo.png" alt="SENA" className="h-[68px] w-auto" />
+    </div>
   );
 }
 
-function SenaComunica() {
+function SocialIconsRow() {
   return (
-    <img src="/sena-comunica.png" alt="SENA Comunica" className="h-[45px] w-auto mx-auto mb-2" />
-  );
-}
-
-function Classification({ label }: { label: string }) {
-  const isPublic = label.trim().toUpperCase() === 'PÚBLICA' || label.trim().toUpperCase() === 'PUBLICA' || label.trim().toUpperCase() === 'PUBLIC';
-  const isClassified = label.trim().toUpperCase() === 'CLASIFICADA';
-  const isReserved = label.trim().toUpperCase() === 'RESERVADA';
-
-  return (
-    <div className="flex flex-col border border-black text-[12px] w-full max-w-[500px] mx-auto mt-4 mb-4">
-      <div className="bg-black text-white text-center font-bold py-1">
-        CLASIFICACIÓN DE LA INFORMACIÓN
-      </div>
-      <div className="flex text-[11px] leading-tight">
-        <div className="flex-1 flex items-center justify-between border-r border-black px-2 py-1">
-          <span className="font-bold">Pública</span>
-          <span className="border border-black w-4 h-4 flex items-center justify-center text-[10px] leading-none pb-[1px]">{isPublic ? 'x' : '\u00A0'}</span>
-        </div>
-        <div className="flex-1 flex items-center justify-between border-r border-black px-2 py-1">
-          <span>Pública Clasificada</span>
-          <span className="border border-black w-4 h-4 flex items-center justify-center text-[10px] leading-none pb-[1px]">{isClassified ? 'x' : '\u00A0'}</span>
-        </div>
-        <div className="flex-1 flex items-center justify-between px-2 py-1">
-          <span>Pública Reservada</span>
-          <span className="border border-black w-4 h-4 flex items-center justify-center text-[10px] leading-none pb-[1px]">{isReserved ? 'x' : '\u00A0'}</span>
-        </div>
-      </div>
+    <div className="flex items-center justify-center gap-2 text-gray-600 text-[12px]">
+      <FaInstagram size={13} />
+      <FaFacebook size={13} />
+      <FaXTwitter size={13} />
+      <FaYoutube size={13} />
+      <FaLinkedinIn size={13} />
+      <span className="ml-1 font-bold text-[10.5px]">@SENAComunica</span>
+      <span className="mx-1.5 text-gray-400">·</span>
+      <span className="text-[10.5px]">www.sena.edu.co</span>
     </div>
   );
 }
 
 function Footer({ letter }: { letter: Letter }) {
+  const regional = letter.center.regional || '[Regional]';
   const centerName = letter.center.name || '[Nombre del centro]';
   const address = letter.center.address || '[Dirección]';
   const phone = letter.center.phone || '[Teléfono]';
-  const docCode = letter.center.documentCode || '[Código]';
-  const docVersion = letter.center.documentVersion || '[Versión]';
+  const docCode = letter.center.documentCode || '';
+  const docVersion = letter.center.documentVersion || '';
 
   return (
-    <footer className="absolute bottom-6 left-0 right-0 flex flex-col items-center">
-      <div className="w-full text-center text-[11px] font-medium text-[#8bc53f] leading-tight mb-3">
-        <p>{centerName}</p>
-        <p>Dirección {address} - PBX {phone}</p>
+    <footer className="absolute bottom-0 left-0 right-0">
+      <div className="text-center text-[10.5px] font-medium text-[#5a9e1a] leading-snug mb-1 px-24">
+        <p>Regional {regional}/ {centerName}</p>
+        <p>{address} - PBX {phone}</p>
       </div>
-      <SenaComunica />
-      <div className="absolute left-[calc(100%-30px)] bottom-[60px] origin-bottom-left -rotate-90 text-[10px] text-gray-400 tracking-widest whitespace-nowrap">
-        {docCode} {docVersion}
+      <div className="border-t border-gray-200 py-2 px-24 flex items-center justify-center">
+        <SocialIconsRow />
       </div>
+      {(docCode || docVersion) && (
+        <span className="absolute right-2 bottom-8 origin-bottom-right -rotate-90 text-[9px] text-gray-400 tracking-wider whitespace-nowrap">
+          {docCode} {docVersion}
+        </span>
+      )}
     </footer>
+  );
+}
+
+interface BodyParagraphProps {
+  letter: Letter;
+}
+
+function BodyParagraph({ letter }: BodyParagraphProps) {
+  const terms = getGenderTerms(letter.intern.gender);
+  const { intern, period, center } = letter;
+
+  const name = intern.fullName || '[Nombre completo]';
+  const docNum = intern.documentNumber || '[Número de documento]';
+  const docCity = intern.documentCity || '[Ciudad de expedición]';
+  const program = intern.program || '[Programa]';
+  const modality = period.modality || '[Modalidad]';
+  const placeOfPractice = period.area || period.unit || center.name || '[Tecnoparque Nodo]';
+  const startDate = formatDateLong(period.startDate) || '[Fecha de inicio]';
+  const endDate = formatDateLong(period.endDate) || '[Fecha fin]';
+
+  return (
+    <p className="mb-4 text-justify leading-relaxed">
+      <strong>{name}</strong>, {terms.identificado} con la {intern.documentType}{' '}
+      Número <strong>{docNum}</strong> expedida en {docCity}, de la{' '}
+      <strong>{program}</strong>; realizó su práctica en la modalidad de{' '}
+      {modality} en {placeOfPractice} desde el{' '}
+      <strong>{startDate}</strong>, hasta el{' '}
+      <strong>{endDate}</strong>, participó en los siguientes proyectos:
+    </p>
   );
 }
 
@@ -79,89 +92,78 @@ export interface SenaTemplateProps {
 
 export function SenaTemplate({ letter }: SenaTemplateProps) {
   const tasks = letter.activities.tasks.filter((t) => t.trim().length > 0);
-  const strengths = letter.activities.technicalStrengths.filter((s) => s.trim().length > 0);
+
+  const position = (letter.signer.position || '[Cargo del firmante]').toUpperCase();
+  const centerName = (letter.center.name || '[Centro]').toUpperCase();
+  const signerTitle = `El ${position} DEL ${centerName}`;
+
+  const issueDate = formatDateLong(letter.metadata.issueDate) || '[Fecha de expedición]';
+  const city = letter.metadata.city || '[Ciudad]';
 
   return (
     <div className="flex flex-col items-center gap-6">
+      {/* Página 1 */}
       <article data-letter-page="1" className={PAGE_STYLE}>
-        <header className="w-full flex flex-col items-center mb-8">
-          <SenaLogo />
-          <Classification label={buildClassificationLabel(letter)} />
-          
-          <div className="text-center mt-2 text-[15px]">
-            <p>{letter.metadata.documentNumber || '[Número de documento]'}</p>
-          </div>
-          <div className="mb-4 text-center text-[15px] mt-6">
-            <p>{letter.metadata.city || '[Ciudad]'}, {formatDateLong(letter.metadata.issueDate) || '[Fecha de expedición]'}.</p>
-          </div>
-        </header>
+        <CenteredLogoHeader />
 
-        <section className="flex flex-col text-justify leading-relaxed">
-          <h1 className="text-center font-bold uppercase mb-4 px-12">
-            {buildTitle(letter)}
-          </h1>
+        {/* Número de radicado */}
+        <div className="text-center text-[14px] mb-8">
+          {letter.metadata.documentNumber || '[Número de documento]'}
+        </div>
 
-          <p className="text-center font-bold uppercase mb-8 px-8">
-            {buildSubtitle(letter)}
+        {/* Título: cargo del firmante */}
+        <div className="text-center mb-8 px-10 leading-snug">
+          {signerTitle}
+        </div>
+
+        {/* Subtítulo */}
+        <p className="mb-6 text-center font-bold">HACE CONSTAR QUE:</p>
+
+        <section className="flex flex-col leading-relaxed">
+          <BodyParagraph letter={letter} />
+
+          {/* Lista numerada de actividades */}
+          <ol className="list-decimal pl-8 space-y-3 mb-6">
+            {tasks.map((t, i) => (
+              <li key={i} className="text-justify leading-snug">
+                {t}
+              </li>
+            ))}
+            {tasks.length === 0 && (
+              <li className="text-slate-400">[Actividades realizadas]</li>
+            )}
+          </ol>
+
+          {/* Información de contacto del experto */}
+          <p className="mb-6 text-justify">
+            Cualquier información adicional será suministrada por el experto{' '}
+            <strong>{letter.instructor.fullName || '[Nombre del experto]'}</strong>, en el teléfono{' '}
+            {letter.instructor.phone || '[Teléfono]'}, o en correo electrónico{' '}
+            <InstructorEmail email={letter.instructor.email} />
           </p>
 
-          <p className="mb-6 indent-0">{buildBodyParagraph(letter)}</p>
+          {/* Frase de expedición */}
+          <p className="mb-10 pl-4 text-justify">
+            Se expide esta constancia a solicitud del interesado el{' '}
+            <strong>{issueDate}</strong> en la ciudad de {city}
+          </p>
 
-          <div className="mb-6">
-            <p className="mb-2">{buildActivitiesIntro(letter)}</p>
-            <ul className="list-[square] pl-12 space-y-1">
-              {tasks.map((t, i) => (
-                <li key={i}>{t}</li>
-              ))}
-              {tasks.length === 0 && <li className="text-slate-400">[Actividades realizadas]</li>}
-            </ul>
+          {/* Bloque del firmante */}
+          <div className="text-center mb-14 mt-4">
+            <p className="font-bold">{letter.signer.fullName || '[Nombre del firmante]'}</p>
+            <p className="font-bold">{letter.signer.position || '[Cargo del firmante]'}</p>
+            <p className="font-bold">{letter.center.name || '[Nombre del centro]'}</p>
+          </div>
+
+          {/* Proyectó */}
+          <div className="text-[11px] text-black">
+            <p>Proyectó: {letter.drafter.fullName || '[Nombre proyectó]'}</p>
+            <p>{letter.drafter.role || '[Cargo proyectó]'}</p>
           </div>
         </section>
 
         <Footer letter={letter} />
       </article>
-
-      <article data-letter-page="2" className={PAGE_STYLE}>
-        <header className="w-full flex flex-col items-center mb-8">
-          <SenaLogo />
-        </header>
-
-        <section className="flex flex-col text-justify leading-relaxed">
-          <div className="mb-6">
-            <p className="mb-2">Demostró fortalezas Técnicas en:</p>
-            <ul className="list-[square] pl-12 space-y-1">
-              {strengths.map((s, i) => (
-                <li key={i}>{s}</li>
-              ))}
-              {strengths.length === 0 && <li className="text-slate-400">[Fortalezas técnicas]</li>}
-            </ul>
-          </div>
-
-          <p className="mb-8 indent-0">
-            {letter.activities.performanceReview || '[Evaluación del desempeño]'}
-          </p>
-
-          <p className="mb-8">
-            Cualquier información adicional será suministrada por el instructor de etapa productiva {letter.instructor.fullName || '[Nombre del instructor]'} al teléfono {letter.instructor.phone || '[Teléfono]'} o al correo <InstructorEmail email={letter.instructor.email} />
-          </p>
-
-          <p className="mb-8">{letter.metadata.city || '[Ciudad]'}, {formatDateShort(letter.metadata.issueDate) || '[Fecha]'}.</p>
-
-          <p className="mb-16">Cordialmente,</p>
-
-          <div className="text-center mb-16">
-            <p className="font-bold uppercase text-[16px] mb-1">{letter.signer.fullName || '[Nombre del firmante]'}</p>
-            <p className="font-bold text-[16px]">{letter.signer.position || '[Cargo del firmante]'}</p>
-          </div>
-
-          <p className="text-[11px] text-black w-full">
-            Proyectó: {letter.drafter.fullName || '[Nombre proyectó]'}. {letter.drafter.role || '[Cargo proyectó]'}.
-          </p>
-        </section>
-
-        <Footer letter={letter} />
-      </article>
-
     </div>
   );
 }

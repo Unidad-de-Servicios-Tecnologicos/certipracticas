@@ -14,7 +14,10 @@
       "Bash(npm run *)",
       "mcp__claude_ai_Context7__resolve-library-id",
       "mcp__claude_ai_Context7__query-docs",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(ln -s /c/laragon/www/carta/.agents/skills/frontend-ux-a11y .claude/skills/frontend-ux-a11y)",
+      "Bash(npx vite *)",
+      "Bash(git stash *)"
     ]
   }
 }
