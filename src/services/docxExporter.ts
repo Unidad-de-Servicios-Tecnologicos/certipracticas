@@ -14,6 +14,7 @@ import {
 } from 'docx';
 import { saveAs } from 'file-saver';
 import type { Letter } from '@/types/letter';
+import type { SignatureData, SignatureLayout } from '@/types/signature';
 import { formatDateFileSafe, formatDateShort } from '@/utils/formatDate';
 import { buildLetterFilename } from '@/utils/fileDownload';
 import { getGenderTerms, formatProject } from '@/services/letterFormatter';
@@ -38,7 +39,11 @@ function emptyBr(): Paragraph {
   return new Paragraph({ children: [new TextRun({ text: '', size: 10 })] });
 }
 
-export async function exportLetterAsDOCX(letter: Letter): Promise<void> {
+export async function exportLetterAsDOCX(
+  letter: Letter,
+  signature?: SignatureData | null,
+  signatureLayout?: SignatureLayout
+): Promise<void> {
   const { intern, period, center, signer, drafter, metadata, instructor, activities } = letter;
   const tasks = activities.tasks
     .filter((p) => p.code.trim() || p.name.trim() || p.description.trim())
@@ -101,6 +106,44 @@ export async function exportLetterAsDOCX(letter: Letter): Promise<void> {
     children: [new ImageRun({ data: logoData, type: "png", transformation: { width: 75, height: 75 } })]
   }) : emptyBr();
 
+  let signatureData: Uint8Array | null = null;
+  let signatureType: 'png' | 'jpg' | 'gif' = 'png';
+  if (signature?.dataUrl) {
+    try {
+      if (signature.dataUrl.startsWith('data:image/jpeg') || signature.dataUrl.startsWith('data:image/jpg')) {
+        signatureType = 'jpg';
+      } else if (signature.dataUrl.startsWith('data:image/gif')) {
+        signatureType = 'gif';
+      }
+      const response = await fetch(signature.dataUrl);
+      const buffer = await response.arrayBuffer();
+      signatureData = new Uint8Array(buffer);
+    } catch (error) {
+      console.warn('Could not parse signature image for DOCX', error);
+    }
+  }
+
+  const signatureParagraph = signatureData
+    ? new Paragraph({
+        alignment:
+          signatureLayout?.align === 'left'
+            ? AlignmentType.LEFT
+            : signatureLayout?.align === 'right'
+              ? AlignmentType.RIGHT
+              : AlignmentType.CENTER,
+        children: [
+          new ImageRun({
+            data: signatureData,
+            type: signatureType,
+            transformation: {
+              width: Math.round(180 * (signatureLayout?.scale ?? 1)),
+              height: Math.round(64 * (signatureLayout?.scale ?? 1)),
+            },
+          }),
+        ],
+      })
+    : emptyBr();
+
   const bodyChildren = [
     headerLogo,
     emptyBr(),
@@ -144,6 +187,7 @@ export async function exportLetterAsDOCX(letter: Letter): Promise<void> {
     p(val(signer.fullName, 'Nombre del firmante').toUpperCase(), { bold: true, align: AlignmentType.CENTER, size: 22 }),
     p(val(signer.position, 'Cargo del firmante'), { align: AlignmentType.CENTER, bold: true, size: 22 }),
     emptyBr(),
+    signatureParagraph,
     p(`Proyectó: ${val(drafter.fullName, 'Nombre proyectó')}. ${val(drafter.role, 'Rol proyectó')}.`, { size: 18 }),
   ];
 

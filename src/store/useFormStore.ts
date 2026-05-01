@@ -9,23 +9,25 @@ import type { Signer } from '@/types/signer';
 import type { Drafter } from '@/types/drafter';
 import type { LetterMetadata } from '@/types/metadata';
 import type { Project } from '@/types/activities';
-import type { SignatureData } from '@/types/signature';
+import type { SignatureData, SignatureLayout } from '@/types/signature';
 import { emptyLetter } from '@/data/defaultLetter';
 import { STORAGE_KEYS } from '@/data/constants';
 import { parseDurationToMonths, calculateStartDateISO } from '@/utils/formatDate';
 import { parseProjectFromString } from '@/utils/parseProject';
 
 const emptyProject: Project = { code: '', name: '', description: '' };
-
-export interface SignaturePosition {
-  x: number;
-  y: number;
-}
+const defaultSignatureLayout: SignatureLayout = {
+  xPct: 50,
+  yPct: 78,
+  scale: 1,
+  rotationDeg: 0,
+  align: 'center',
+};
 
 interface FormStore {
   letter: Letter;
   signature: SignatureData | null;
-  signaturePosition: SignaturePosition | null;
+  signatureLayout: SignatureLayout;
   textOverrides: Record<string, string>;
   canvasHtml: string | null;
   setIntern: (patch: Partial<Intern>) => void;
@@ -45,7 +47,7 @@ interface FormStore {
   updateStrength: (index: number, value: string) => void;
   removeStrength: (index: number) => void;
   setSignature: (data: SignatureData | null) => void;
-  setSignaturePosition: (pos: SignaturePosition | null) => void;
+  setSignatureLayout: (patch: Partial<SignatureLayout>) => void;
   setTextOverride: (key: string, value: string) => void;
   resetTextOverrides: () => void;
   setCanvasHtml: (html: string | null) => void;
@@ -58,7 +60,7 @@ export const useFormStore = create<FormStore>()(
     (set) => ({
       letter: emptyLetter,
       signature: null,
-      signaturePosition: null,
+      signatureLayout: defaultSignatureLayout,
       textOverrides: {},
       canvasHtml: null,
       setIntern: (patch) =>
@@ -181,12 +183,20 @@ export const useFormStore = create<FormStore>()(
           };
         }),
       setSignature: (data) => set({ signature: data }),
-      setSignaturePosition: (pos) => set({ signaturePosition: pos }),
+      setSignatureLayout: (patch) =>
+        set((s) => ({ signatureLayout: { ...s.signatureLayout, ...patch } })),
       setTextOverride: (key, value) =>
         set((s) => ({ textOverrides: { ...s.textOverrides, [key]: value } })),
       resetTextOverrides: () => set({ textOverrides: {} }),
       setCanvasHtml: (html) => set({ canvasHtml: html }),
-      reset: () => set({ letter: emptyLetter, signature: null, signaturePosition: null, textOverrides: {}, canvasHtml: null }),
+      reset: () =>
+        set({
+          letter: emptyLetter,
+          signature: null,
+          signatureLayout: defaultSignatureLayout,
+          textOverrides: {},
+          canvasHtml: null,
+        }),
       loadSample: (sample) => set({ letter: sample, canvasHtml: null }),
     }),
     {
@@ -209,7 +219,7 @@ export const useFormStore = create<FormStore>()(
 
         if (!state.textOverrides) state.textOverrides = {};
         if (state.signature === undefined) state.signature = null;
-        if (state.signaturePosition === undefined) state.signaturePosition = null;
+        if (state.signatureLayout === undefined) state.signatureLayout = defaultSignatureLayout;
         if (state.canvasHtml === undefined) state.canvasHtml = null;
 
         if (state.letter?.metadata) {

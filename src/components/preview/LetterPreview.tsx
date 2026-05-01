@@ -7,6 +7,7 @@ import type { EditorMode } from '@/store/useAppStore';
 export const LetterPreview = forwardRef<HTMLDivElement>((_props, forwardedRef) => {
   const letter = useFormStore((s) => s.letter);
   const signature = useFormStore((s) => s.signature);
+  const signatureLayout = useFormStore((s) => s.signatureLayout);
   const canvasHtml = useFormStore((s) => s.canvasHtml);
   const setCanvasHtml = useFormStore((s) => s.setCanvasHtml);
   const zoom = useAppStore((s) => s.zoom);
@@ -81,7 +82,7 @@ export const LetterPreview = forwardRef<HTMLDivElement>((_props, forwardedRef) =
           canvasHtml && editorMode === 'preview' ? (
             <div dangerouslySetInnerHTML={{ __html: canvasHtml }} />
           ) : (
-            <SenaTemplate letter={letter} signature={signature} />
+            <SenaTemplate letter={letter} signature={signature} signatureLayout={signatureLayout} />
           )
         )}
       </div>

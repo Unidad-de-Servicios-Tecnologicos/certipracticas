@@ -10,7 +10,9 @@ import type { SignatureMethod } from '@/types/signature';
 export function SignaturePanel() {
   const [activeTab, setActiveTab] = useState<SignatureMethod>('drawn');
   const signature = useFormStore((s) => s.signature);
+  const signatureLayout = useFormStore((s) => s.signatureLayout);
   const setSignature = useFormStore((s) => s.setSignature);
+  const setSignatureLayout = useFormStore((s) => s.setSignatureLayout);
 
   function handleSave(dataUrl: string) {
     setSignature({ method: activeTab, dataUrl, createdAt: new Date().toISOString() });
@@ -35,11 +37,81 @@ export function SignaturePanel() {
             variant="ghost"
             size="sm"
             leftIcon={<FaTrash size={12} />}
-            onClick={() => setSignature(null)}
+            onClick={() => {
+              setSignature(null);
+              setSignatureLayout({ xPct: 50, yPct: 78, scale: 1, rotationDeg: 0, align: 'center' });
+            }}
             className="text-[var(--color-danger)]"
           >
             Eliminar
           </Button>
+        </div>
+      )}
+
+      {signature && (
+        <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] p-3">
+          <p className="mb-3 text-sm font-medium">Transformación en carta</p>
+          <div className="grid gap-3">
+            <label className="grid gap-1 text-xs text-[var(--color-text-secondary)]">
+              Escala ({signatureLayout.scale.toFixed(2)}x)
+              <input
+                type="range"
+                min="0.4"
+                max="2"
+                step="0.05"
+                value={signatureLayout.scale}
+                onChange={(e) => setSignatureLayout({ scale: Number(e.target.value) })}
+              />
+            </label>
+            <label className="grid gap-1 text-xs text-[var(--color-text-secondary)]">
+              Rotación ({signatureLayout.rotationDeg.toFixed(0)}°)
+              <input
+                type="range"
+                min="-180"
+                max="180"
+                step="1"
+                value={signatureLayout.rotationDeg}
+                onChange={(e) => setSignatureLayout({ rotationDeg: Number(e.target.value) })}
+              />
+            </label>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-[var(--color-text-secondary)]">Alinear</span>
+              <Button
+                type="button"
+                size="sm"
+                variant={signatureLayout.align === 'left' ? 'primary' : 'ghost'}
+                onClick={() => setSignatureLayout({ align: 'left', xPct: 15 })}
+              >
+                Izq
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={signatureLayout.align === 'center' ? 'primary' : 'ghost'}
+                onClick={() => setSignatureLayout({ align: 'center', xPct: 50 })}
+              >
+                Centro
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={signatureLayout.align === 'right' ? 'primary' : 'ghost'}
+                onClick={() => setSignatureLayout({ align: 'right', xPct: 85 })}
+              >
+                Der
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() =>
+                  setSignatureLayout({ xPct: 50, yPct: 78, scale: 1, rotationDeg: 0, align: 'center' })
+                }
+              >
+                Reset
+              </Button>
+            </div>
+          </div>
         </div>
       )}
 

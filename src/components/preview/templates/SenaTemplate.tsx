@@ -1,10 +1,13 @@
+import type { PointerEvent as ReactPointerEvent } from 'react';
 import type { Letter } from '@/types/letter';
 import type { Project } from '@/types/activities';
-import type { SignatureData } from '@/types/signature';
+import type { SignatureData, SignatureLayout } from '@/types/signature';
 import { getGenderTerms } from '@/services/letterFormatter';
 import { isEmailValid } from '@/services/validators';
 import { formatDateLong } from '@/utils/formatDate';
 import { EditableBlock } from '@/components/editor/EditableBlock';
+import { useFormStore } from '@/store/useFormStore';
+import { useAppStore } from '@/store/useAppStore';
 import { FaInstagram, FaFacebook, FaYoutube, FaLinkedinIn } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 
@@ -112,9 +115,95 @@ function InstructorEmail({ email }: { email: string }) {
 export interface SenaTemplateProps {
   letter: Letter;
   signature?: SignatureData | null;
+  signatureLayout?: SignatureLayout;
 }
 
-export function SenaTemplate({ letter, signature }: SenaTemplateProps) {
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
+
+function SignatureOverlay({
+  signature,
+  signatureLayout,
+}: {
+  signature: SignatureData;
+  signatureLayout: SignatureLayout;
+}) {
+  const setSignatureLayout = useFormStore((s) => s.setSignatureLayout);
+  const editorMode = useAppStore((s) => s.editorMode);
+
+  function handleDragStart(e: ReactPointerEvent<HTMLDivElement>) {
+    if (editorMode !== 'preview') return;
+    const target = e.currentTarget.closest('[data-letter-page]') as HTMLElement | null;
+    if (!target) return;
+    const onMove = (event: PointerEvent) => {
+      const rect = target.getBoundingClientRect();
+      const xPct = clamp(((event.clientX - rect.left) / rect.width) * 100, 4, 96);
+      const yPct = clamp(((event.clientY - rect.top) / rect.height) * 100, 6, 92);
+      setSignatureLayout({ xPct, yPct });
+    };
+    const onUp = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  }
+
+  function handleResizeStart(e: ReactPointerEvent<HTMLButtonElement>) {
+    e.stopPropagation();
+    const startX = e.clientX;
+    const startScale = signatureLayout.scale;
+    const onMove = (event: PointerEvent) => {
+      const nextScale = clamp(startScale + (event.clientX - startX) * 0.004, 0.4, 2);
+      setSignatureLayout({ scale: nextScale });
+    };
+    const onUp = () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  }
+
+  const isInteractive = editorMode === 'preview';
+  return (
+    <div
+      className={isInteractive ? 'group absolute select-none' : 'absolute select-none'}
+      style={{
+        left: `${signatureLayout.xPct}%`,
+        top: `${signatureLayout.yPct}%`,
+        transform: `translate(-50%, -50%) rotate(${signatureLayout.rotationDeg}deg)`,
+      }}
+      onPointerDown={handleDragStart}
+      role={isInteractive ? 'button' : undefined}
+      aria-label={isInteractive ? 'Firma arrastrable' : undefined}
+      tabIndex={isInteractive ? 0 : -1}
+    >
+      <img
+        src={signature.dataUrl}
+        alt="Firma digital"
+        className={isInteractive ? 'pointer-events-none object-contain' : 'object-contain'}
+        style={{
+          width: `${180 * signatureLayout.scale}px`,
+          maxWidth: '340px',
+          maxHeight: '140px',
+        }}
+      />
+      {isInteractive && (
+        <button
+          type="button"
+          aria-label="Redimensionar firma"
+          title="Arrastra para cambiar tamaño"
+          className="absolute -bottom-2 -right-2 hidden h-4 w-4 cursor-ew-resize rounded-full border border-white bg-[var(--color-accent)] shadow group-hover:block"
+          onPointerDown={handleResizeStart}
+        />
+      )}
+    </div>
+  );
+}
+
+export function SenaTemplate({ letter, signature, signatureLayout }: SenaTemplateProps) {
   const tasks = letter.activities.tasks.filter(
     (p) => p.code.trim() || p.name.trim() || p.description.trim()
   );
@@ -134,6 +223,9 @@ export function SenaTemplate({ letter, signature }: SenaTemplateProps) {
     <div className="flex flex-col items-center gap-6">
       {/* Página 1 */}
       <article data-letter-page="1" className={PAGE_STYLE}>
+        {signature && signatureLayout && (
+          <SignatureOverlay signature={signature} signatureLayout={signatureLayout} />
+        )}
         <CenteredLogoHeader />
 
         {/* Número de radicado */}
@@ -198,17 +290,6 @@ export function SenaTemplate({ letter, signature }: SenaTemplateProps) {
             <p className="font-bold">{letter.signer.position || '[Cargo del firmante]'}</p>
             <p className="font-bold">{letter.center.name || '[Nombre del centro]'}</p>
           </div>
-
-          {/* Firma digital */}
-          {signature && (
-            <div className="flex justify-center mb-4">
-              <img
-                src={signature.dataUrl}
-                alt="Firma"
-                className="max-h-[70px] max-w-[180px] object-contain"
-              />
-            </div>
-          )}
 
           {/* Proyectó */}
           <div className="text-[11px] text-black">

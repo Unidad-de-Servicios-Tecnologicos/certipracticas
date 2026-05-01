@@ -7,6 +7,8 @@ import { notify } from '@/utils/toast';
 
 export function useExport() {
   const letter = useFormStore((s) => s.letter);
+  const signature = useFormStore((s) => s.signature);
+  const signatureLayout = useFormStore((s) => s.signatureLayout);
   const setExporting = useAppStore((s) => s.setExporting);
 
   const exportPDF = useCallback(
@@ -36,7 +38,7 @@ export function useExport() {
     setExporting(true);
     const loadingId = notify.loading('Exportando DOCX…');
     try {
-      await exportLetterAsDOCX(letter);
+      await exportLetterAsDOCX(letter, signature, signatureLayout);
       notify.dismiss(loadingId);
       notify.success('DOCX exportado correctamente.');
     } catch (err) {
@@ -46,7 +48,7 @@ export function useExport() {
     } finally {
       setExporting(false);
     }
-  }, [letter, setExporting]);
+  }, [letter, setExporting, signature, signatureLayout]);
 
   return { exportPDF, exportDOCX };
 }
