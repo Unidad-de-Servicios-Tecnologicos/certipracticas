@@ -1,7 +1,10 @@
 import type { Letter } from '@/types/letter';
+import type { Project } from '@/types/activities';
+import type { SignatureData } from '@/types/signature';
 import { getGenderTerms } from '@/services/letterFormatter';
 import { isEmailValid } from '@/services/validators';
 import { formatDateLong } from '@/utils/formatDate';
+import { EditableBlock } from '@/components/editor/EditableBlock';
 import { FaInstagram, FaFacebook, FaYoutube, FaLinkedinIn } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 
@@ -57,11 +60,20 @@ function Footer({ letter }: { letter: Letter }) {
   );
 }
 
-interface BodyParagraphProps {
-  letter: Letter;
+function ProjectItem({ project }: { project: Project }) {
+  const { code, name, description } = project;
+  if (!code && !name && !description) return null;
+  const header = [code.trim(), name.trim()].filter(Boolean).join(' – ');
+  return (
+    <li className="text-justify leading-snug">
+      {header && <strong>{header}</strong>}
+      {header && description && <span>: </span>}
+      {description}
+    </li>
+  );
 }
 
-function BodyParagraph({ letter }: BodyParagraphProps) {
+function BodyParagraph({ letter }: { letter: Letter }) {
   const terms = getGenderTerms(letter.intern.gender);
   const { intern, period, center } = letter;
 
@@ -86,12 +98,26 @@ function BodyParagraph({ letter }: BodyParagraphProps) {
   );
 }
 
-export interface SenaTemplateProps {
-  letter: Letter;
+function InstructorEmail({ email }: { email: string }) {
+  const trimmed = email.trim();
+  if (!trimmed) return <>[Email]</>;
+  if (!isEmailValid(trimmed)) return <>{trimmed}</>;
+  return (
+    <a href={`mailto:${encodeURIComponent(trimmed)}`} className="text-blue-600 underline">
+      {trimmed}
+    </a>
+  );
 }
 
-export function SenaTemplate({ letter }: SenaTemplateProps) {
-  const tasks = letter.activities.tasks.filter((t) => t.trim().length > 0);
+export interface SenaTemplateProps {
+  letter: Letter;
+  signature?: SignatureData | null;
+}
+
+export function SenaTemplate({ letter, signature }: SenaTemplateProps) {
+  const tasks = letter.activities.tasks.filter(
+    (p) => p.code.trim() || p.name.trim() || p.description.trim()
+  );
 
   const position = (letter.signer.position || '[Cargo del firmante]').toUpperCase();
   const centerName = (letter.center.name || '[Centro]').toUpperCase();
@@ -99,6 +125,10 @@ export function SenaTemplate({ letter }: SenaTemplateProps) {
 
   const issueDate = formatDateLong(letter.metadata.issueDate) || '[Fecha de expedición]';
   const city = letter.metadata.city || '[Ciudad]';
+
+  const ext = letter.instructor.extension?.trim()
+    ? ` extensión ${letter.instructor.extension.trim()}`
+    : '';
 
   return (
     <div className="flex flex-col items-center gap-6">
@@ -112,40 +142,54 @@ export function SenaTemplate({ letter }: SenaTemplateProps) {
         </div>
 
         {/* Título: cargo del firmante */}
-        <div className="text-center mb-8 px-10 leading-snug">
-          {signerTitle}
-        </div>
+        <EditableBlock
+          overrideKey="signerHeader"
+          defaultValue={signerTitle}
+          as="div"
+          className="text-center mb-8 px-10 leading-snug"
+        />
 
         {/* Subtítulo */}
-        <p className="mb-6 text-center font-bold">HACE CONSTAR QUE:</p>
+        <EditableBlock
+          overrideKey="haceConstar"
+          defaultValue="HACE CONSTAR QUE:"
+          as="p"
+          className="mb-6 text-center font-bold"
+        />
 
         <section className="flex flex-col leading-relaxed">
           <BodyParagraph letter={letter} />
 
-          {/* Lista numerada de actividades */}
+          {/* Lista numerada de proyectos */}
           <ol className="list-decimal pl-8 space-y-3 mb-6">
-            {tasks.map((t, i) => (
-              <li key={i} className="text-justify leading-snug">
-                {t}
-              </li>
+            {tasks.map((p, i) => (
+              <ProjectItem key={i} project={p} />
             ))}
             {tasks.length === 0 && (
-              <li className="text-slate-400">[Actividades realizadas]</li>
+              <li className="text-slate-400 italic">[Proyectos realizados]</li>
             )}
           </ol>
 
           {/* Información de contacto del experto */}
           <p className="mb-6 text-justify">
-            Cualquier información adicional será suministrada por el experto{' '}
+            <EditableBlock
+              overrideKey="contactPrefix"
+              defaultValue="Cualquier información adicional será suministrada por el experto"
+              as="span"
+            />{' '}
             <strong>{letter.instructor.fullName || '[Nombre del experto]'}</strong>, en el teléfono{' '}
-            {letter.instructor.phone || '[Teléfono]'}, o en correo electrónico{' '}
+            {letter.instructor.phone || '[Teléfono]'}{ext}, o en correo electrónico{' '}
             <InstructorEmail email={letter.instructor.email} />
           </p>
 
           {/* Frase de expedición */}
           <p className="mb-10 pl-4 text-justify">
-            Se expide esta constancia a solicitud del interesado el{' '}
-            <strong>{issueDate}</strong> en la ciudad de {city}
+            <EditableBlock
+              overrideKey="issuedPrefix"
+              defaultValue="Se expide esta constancia a solicitud del interesado"
+              as="span"
+            />{' '}
+            el <strong>{issueDate}</strong> en la ciudad de {city}
           </p>
 
           {/* Bloque del firmante */}
@@ -154,6 +198,17 @@ export function SenaTemplate({ letter }: SenaTemplateProps) {
             <p className="font-bold">{letter.signer.position || '[Cargo del firmante]'}</p>
             <p className="font-bold">{letter.center.name || '[Nombre del centro]'}</p>
           </div>
+
+          {/* Firma digital */}
+          {signature && (
+            <div className="flex justify-center mb-4">
+              <img
+                src={signature.dataUrl}
+                alt="Firma"
+                className="max-h-[70px] max-w-[180px] object-contain"
+              />
+            </div>
+          )}
 
           {/* Proyectó */}
           <div className="text-[11px] text-black">
@@ -165,16 +220,5 @@ export function SenaTemplate({ letter }: SenaTemplateProps) {
         <Footer letter={letter} />
       </article>
     </div>
-  );
-}
-
-function InstructorEmail({ email }: { email: string }) {
-  const trimmed = email.trim();
-  if (!trimmed) return <>[Email]</>;
-  if (!isEmailValid(trimmed)) return <>{trimmed}</>;
-  return (
-    <a href={`mailto:${encodeURIComponent(trimmed)}`} className="text-blue-600 underline">
-      {trimmed}
-    </a>
   );
 }

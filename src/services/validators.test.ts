@@ -36,7 +36,13 @@ describe('validateLetter', () => {
   it('accepts when at least one non-empty task is present', () => {
     const letter: Letter = {
       ...sampleLetter,
-      activities: { ...sampleLetter.activities, tasks: ['', 'tarea válida'] },
+      activities: {
+        ...sampleLetter.activities,
+        tasks: [
+          { code: '', name: '', description: '' },
+          { code: '', name: 'tarea válida', description: '' },
+        ],
+      },
     };
     expect(validateLetter(letter)['activities.tasks']).toBeUndefined();
   });

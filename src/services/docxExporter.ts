@@ -16,7 +16,7 @@ import { saveAs } from 'file-saver';
 import type { Letter } from '@/types/letter';
 import { formatDateFileSafe, formatDateShort } from '@/utils/formatDate';
 import { buildLetterFilename } from '@/utils/fileDownload';
-import { getGenderTerms } from '@/services/letterFormatter';
+import { getGenderTerms, formatProject } from '@/services/letterFormatter';
 
 function val(value: string | undefined | null, fieldName: string): string {
   return value && value.trim() !== '' ? value : `[${fieldName}]`;
@@ -40,7 +40,9 @@ function emptyBr(): Paragraph {
 
 export async function exportLetterAsDOCX(letter: Letter): Promise<void> {
   const { intern, period, center, signer, drafter, metadata, instructor, activities } = letter;
-  const tasks = activities.tasks.filter((t) => t.trim().length > 0);
+  const tasks = activities.tasks
+    .filter((p) => p.code.trim() || p.name.trim() || p.description.trim())
+    .map(formatProject);
   const strengths = activities.technicalStrengths.filter((s) => s.trim().length > 0);
 
   // Fetch logos safely
@@ -125,7 +127,7 @@ export async function exportLetterAsDOCX(letter: Letter): Promise<void> {
     emptyBr(),
     p(val(activities.performanceReview, 'Evaluación general del desempeño'), { align: AlignmentType.JUSTIFIED, size: 22 }),
     emptyBr(),
-    p(`Cualquier información adicional será suministrada por el instructor de etapa productiva ${val(instructor.fullName, 'Nombre del instructor')} al teléfono ${val(instructor.phone, 'Teléfono')} o al correo `, { size: 22 }),
+    p(`Cualquier información adicional será suministrada por el instructor de etapa productiva ${val(instructor.fullName, 'Nombre del instructor')} al teléfono ${val(instructor.phone, 'Teléfono')}${instructor.extension?.trim() ? ` extensión ${instructor.extension.trim()}` : ''} o al correo `, { size: 22 }),
     new Paragraph({
       alignment: AlignmentType.LEFT,
       children: [

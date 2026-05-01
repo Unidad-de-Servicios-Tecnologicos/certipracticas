@@ -27,13 +27,14 @@ export const emptyLetter: Letter = {
     area: 'Tecnoparque Nodo Medellín',
   },
   activities: {
-    tasks: [''],
+    tasks: [{ code: '', name: '', description: '' }],
     technicalStrengths: [''],
     performanceReview: '',
   },
   instructor: {
     fullName: '',
     phone: '',
+    extension: '',
     email: '',
   },
   signer: {
@@ -79,15 +80,24 @@ export const sampleLetter: Letter = {
   },
   activities: {
     tasks: [
-      'P2023-014296-13274 – StampArt: Plataforma e-commerce para la venta de camisas con estampados personalizados, que permita la personalización de las prendas.',
-      'P2023-014296-13187 - Plataforma Integral para la Gestión de Residuos Sólidos Aprovechables – PIRSA: Plataforma web con acceso a dispositivos móviles que integre a los tres actores principales que intervienen en la gestión de residuos sólidos aprovechables: Generador - Recolector y Transformador, utilizando la tecnología como medio facilitador para alcanzar una acertada logística y gestión en la recolección, almacenamiento, tratamiento y aprovechamiento de los residuos sólidos aprovechables.',
+      {
+        code: 'P2023-014296-13274',
+        name: 'StampArt',
+        description: 'Plataforma e-commerce para la venta de camisas con estampados personalizados, que permita la personalización de las prendas.',
+      },
+      {
+        code: 'P2023-014296-13187',
+        name: 'Plataforma Integral para la Gestión de Residuos Sólidos Aprovechables – PIRSA',
+        description: 'Plataforma web con acceso a dispositivos móviles que integre a los tres actores principales que intervienen en la gestión de residuos sólidos aprovechables: Generador - Recolector y Transformador, utilizando la tecnología como medio facilitador para alcanzar una acertada logística y gestión en la recolección, almacenamiento, tratamiento y aprovechamiento de los residuos sólidos aprovechables.',
+      },
     ],
     technicalStrengths: [''],
     performanceReview: '',
   },
   instructor: {
     fullName: 'Jorge Bolaños González',
-    phone: '6045760000 extensión 42253',
+    phone: '6045760000',
+    extension: '42253',
     email: 'jybolanos@sena.edu.co',
   },
   signer: {

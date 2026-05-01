@@ -25,8 +25,10 @@ export function validateLetter(letter: Letter): ValidationErrors {
     errors['period.endDate'] = 'La fecha de fin debe ser posterior al inicio';
   }
 
-  const tasks = letter.activities.tasks.filter((t) => t.trim().length > 0);
-  if (tasks.length === 0) errors['activities.tasks'] = 'Agrega al menos 1 proyecto';
+  const validTasks = letter.activities.tasks.filter(
+    (p) => p.code.trim() || p.name.trim() || p.description.trim()
+  );
+  if (validTasks.length === 0) errors['activities.tasks'] = 'Agrega al menos 1 proyecto';
 
   if (!letter.instructor.fullName.trim()) errors['instructor.fullName'] = 'Nombre requerido';
   if (letter.instructor.email && !/^\S+@\S+\.\S+$/.test(letter.instructor.email)) {

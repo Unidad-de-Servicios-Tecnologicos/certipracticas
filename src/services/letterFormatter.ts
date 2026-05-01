@@ -1,5 +1,6 @@
 import type { Letter } from '@/types/letter';
 import type { Gender } from '@/types/intern';
+import type { Project } from '@/types/activities';
 import { formatDateLong } from '@/utils/formatDate';
 
 function val(value: string | undefined | null, fieldName: string): string {
@@ -77,7 +78,13 @@ export function buildClosing(letter: Letter): string {
 
 export function buildInstructorLine(letter: Letter): string {
   const { instructor } = letter;
-  return `Instructor de etapa productiva: ${val(instructor.fullName, 'Nombre completo')} · Tel: ${val(instructor.phone, 'Teléfono')} · ${val(instructor.email, 'Email')}`;
+  const ext = instructor.extension?.trim() ? ` extensión ${instructor.extension.trim()}` : '';
+  return `Instructor de etapa productiva: ${val(instructor.fullName, 'Nombre completo')} · Tel: ${val(instructor.phone, 'Teléfono')}${ext} · ${val(instructor.email, 'Email')}`;
+}
+
+export function formatProject(project: Project): string {
+  const head = [project.code.trim(), project.name.trim()].filter(Boolean).join(' – ');
+  return [head, project.description.trim()].filter(Boolean).join(': ');
 }
 
 export function buildDrafterLine(letter: Letter): string {

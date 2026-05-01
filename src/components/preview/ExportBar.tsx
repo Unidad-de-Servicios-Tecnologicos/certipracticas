@@ -4,6 +4,7 @@ import { Spinner } from '@/components/ui/Spinner';
 import { useExport } from '@/hooks/useExport';
 import { useAppStore } from '@/store/useAppStore';
 import { ZoomControl } from './ZoomControl';
+import { BlockStyleBar } from '@/components/editor/BlockStyleBar';
 
 export interface ExportBarProps {
   previewRef: React.RefObject<HTMLDivElement | null>;
@@ -16,6 +17,7 @@ export function ExportBar({ previewRef }: ExportBarProps) {
   return (
     <div className="sticky bottom-0 flex items-center justify-between gap-3 border-t border-[var(--color-border)] bg-[var(--color-bg-secondary)] px-4 py-3">
       <ZoomControl />
+      <BlockStyleBar />
       <div className="flex gap-2">
         <Button
           onClick={() => exportDOCX()}
