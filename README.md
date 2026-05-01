@@ -2,16 +2,20 @@
 
 > **Forja cartas profesionales con precisión.**
 
-Aplicación web client-side para generar **Certificaciones de Ejecución de Etapa Productiva del SENA** con vista previa en tiempo real, dictado por voz, generación asistida por IA y exportación a PDF/DOCX.
+Aplicación web client-side para generar **Certificaciones de Ejecución de Etapa Productiva del SENA** con vista previa en tiempo real, generación asistida por IA y exportación a PDF/DOCX.
 
 ---
 
 ## Características
 
 - Editor de carta con vista previa en vivo (split-view).
-- Dictado por voz en campos de texto (Web Speech API).
+- Edición visual del documento (canvas): formato de texto (negrita, alineación, tamaños, color) y restauración desde formulario.
+- Gestión de logos del documento: agregar/mover/duplicar/bloquear y alinear; ubicación por sección (header/footer/body).
+- Importar / exportar plantilla en **JSON**.
+- Firma manuscrita para “Proyectó”: dibujar o subir imagen, con controles de escala/rotación/alineación.
 - Generación asistida por IA (Gemini) para actividades, fortalezas técnicas y evaluación.
-- Exportación a **PDF** (jspdf + html-to-image) y **DOCX** (docx).
+- Actividades como **proyectos estructurados** (código, nombre, descripción).
+- Exportación a **PDF** (jsPDF + imágenes) y **DOCX** (docx).
 - Autosave en `localStorage`.
 - Tema claro/oscuro.
 - Plantilla fiel al formato oficial SENA.
@@ -28,8 +32,7 @@ Aplicación web client-side para generar **Certificaciones de Ejecución de Etap
 | Estilos | TailwindCSS v4 |
 | Estado | Zustand |
 | Testing | Vitest + React Testing Library |
-| Voz | Web Speech API |
-| Export | jspdf, html-to-image, docx, file-saver |
+| Export | jspdf, docx, file-saver |
 | IA | Google Gemini (extensible a OpenAI/Anthropic) |
 
 ---
@@ -116,12 +119,14 @@ docker run -p 8080:80 certipracticas
 ```
 src/
 ├── components/
-│   ├── form/       Formulario, campos, dictado, IA
+│   ├── editor/     Editor visual (canvas), overrides, herramientas
+│   ├── form/       Formulario, campos, IA
 │   ├── layout/     AppShell, Header, SplitView, ThemeToggle
 │   ├── preview/    LetterPreview, ExportBar, ZoomControl, templates/
+│   ├── signature/  Captura y configuración de firma
 │   └── ui/         Componentes UI atómicos
 ├── data/           Constantes y configuración estática
-├── hooks/          useSpeechToText, useExport, useAutosave, useTheme
+├── hooks/          useExport, useAutosave, useTheme
 ├── pages/          LandingPage, GeneratorPage
 ├── services/       aiService, pdfExporter, docxExporter, validators, …
 ├── store/          useFormStore, useAppStore (Zustand)
@@ -155,14 +160,14 @@ La app es **100 % client-side**, por lo que cualquier variable `VITE_*` queda em
   2. `API restrictions` → limitar sólo a **Generative Language API**.
   3. Configurar **cuotas** y **alertas de presupuesto**.
   4. **Rotar la key** si sospechas que se filtró.
-- Los datos del formulario se guardan en **`localStorage` sin cifrar**. No uses la app para datos sensibles fuera de su propósito.
+- Los datos del formulario, la firma (imagen base64), la plantilla JSON y el estado del editor se guardan en **`localStorage` sin cifrar**. No uses la app para datos sensibles fuera de su propósito.
 - En producción, servir **siempre bajo HTTPS** (el `nginx.conf` incluye HSTS + CSP + Permissions-Policy).
 - Ejecuta `npm audit` periódicamente. Las vulnerabilidades residuales en `vite`/`vitest`/`esbuild` sólo afectan al dev server, no al bundle de producción.
 
 ## Compatibilidad de navegador
 
-- **Chromium** (Chrome, Edge, Brave): soporte completo, incluyendo Web Speech API.
-- **Firefox / Safari**: la app funciona, pero el dictado por voz puede no estar disponible.
+- **Chromium** (Chrome, Edge, Brave): soporte completo.
+- **Firefox / Safari**: la app funciona, pero algunas APIs del navegador pueden variar según versión.
 
 ---
 

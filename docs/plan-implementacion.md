@@ -2,7 +2,7 @@
 
 ## Contexto
 
-La aplicación ya tiene una base sólida (formulario, preview en tiempo real, export PDF/DOCX, voz, IA). El objetivo es completarla con tres capacidades faltantes y corregir un modelo de datos incorrecto frente al PDF de referencia:
+La aplicación ya tiene una base sólida (formulario, preview en tiempo real, export PDF/DOCX, IA). El objetivo es completarla con tres capacidades faltantes y corregir un modelo de datos incorrecto frente al PDF de referencia:
 
 1. **Modelo de datos roto**: `activities.tasks` es `string[]` pero el PDF tiene proyectos con código + nombre + descripción estructurados. El `sampleLetter` embute la extensión en el campo `phone` como workaround.
 2. **Sin firmas**: El PDF muestra una imagen de firma manuscrita en la zona "Proyectó". No hay mecanismo ni para subir imagen ni para dibujar.
@@ -21,7 +21,7 @@ La aplicación ya tiene una base sólida (formulario, preview en tiempo real, ex
 | Preview en tiempo real | ✅ Implementado | Split-view redimensionable |
 | Exportación PDF | ✅ Implementado | pixelRatio: 3 ya configurado |
 | Exportación DOCX | ✅ Implementado | Con logo y estilos |
-| Dictado por voz | ✅ Implementado | Web Speech API |
+| Dictado por voz | ❌ No implementado | Fuera del alcance actual |
 | Generación IA (Gemini) | ✅ Implementado | Solo provider activo |
 | Autosave localStorage | ✅ Implementado | Con persist de Zustand |
 | Editor visual (Canva-like) | ❌ No existe | — |

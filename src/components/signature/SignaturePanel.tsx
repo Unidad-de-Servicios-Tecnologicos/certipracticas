@@ -39,7 +39,7 @@ export function SignaturePanel() {
             leftIcon={<FaTrash size={12} />}
             onClick={() => {
               setSignature(null);
-              setSignatureLayout({ xPct: 50, yPct: 78, scale: 1, rotationDeg: 0, align: 'center' });
+              setSignatureLayout({ xPct: 22, yPct: 84, scale: 1, rotationDeg: 0, align: 'left' });
             }}
             className="text-[var(--color-danger)]"
           >
@@ -105,7 +105,7 @@ export function SignaturePanel() {
                 size="sm"
                 variant="ghost"
                 onClick={() =>
-                  setSignatureLayout({ xPct: 50, yPct: 78, scale: 1, rotationDeg: 0, align: 'center' })
+                  setSignatureLayout({ xPct: 22, yPct: 84, scale: 1, rotationDeg: 0, align: 'left' })
                 }
               >
                 Reset

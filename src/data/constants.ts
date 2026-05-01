@@ -21,10 +21,4 @@ export const GENDER_OPTIONS = [
   { value: 'M', label: 'Masculino' },
 ] as const;
 
-export const CLASSIFICATION_OPTIONS = [
-  { value: 'public', label: 'Pública' },
-  { value: 'classified', label: 'Clasificada' },
-  { value: 'reserved', label: 'Reservada' },
-] as const;
-
 export const MIC_SILENCE_MS = 3000;

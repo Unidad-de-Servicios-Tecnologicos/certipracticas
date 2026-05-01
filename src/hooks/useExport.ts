@@ -9,6 +9,8 @@ export function useExport() {
   const letter = useFormStore((s) => s.letter);
   const signature = useFormStore((s) => s.signature);
   const signatureLayout = useFormStore((s) => s.signatureLayout);
+  const documentSchema = useFormStore((s) => s.documentSchema);
+  const textOverrides = useFormStore((s) => s.textOverrides);
   const setExporting = useAppStore((s) => s.setExporting);
 
   const exportPDF = useCallback(
@@ -20,7 +22,12 @@ export function useExport() {
       setExporting(true);
       const loadingId = notify.loading('Exportando PDF…');
       try {
-        await exportLetterAsPDF(previewElement, letter);
+        await exportLetterAsPDF(previewElement, letter, {
+          signature,
+          signatureLayout,
+          documentSchema,
+          textOverrides,
+        });
         notify.dismiss(loadingId);
         notify.success('PDF exportado correctamente.');
       } catch (err) {
@@ -31,14 +38,23 @@ export function useExport() {
         setExporting(false);
       }
     },
-    [letter, setExporting]
+    [letter, setExporting, signature, signatureLayout, documentSchema, textOverrides]
   );
 
-  const exportDOCX = useCallback(async () => {
+  const exportDOCX = useCallback(async (previewElement: HTMLElement | null) => {
+    if (!previewElement) {
+      notify.error('No se encontró la vista previa para exportar.');
+      return;
+    }
     setExporting(true);
     const loadingId = notify.loading('Exportando DOCX…');
     try {
-      await exportLetterAsDOCX(letter, signature, signatureLayout);
+      await exportLetterAsDOCX(letter, {
+        signature,
+        signatureLayout,
+        documentSchema,
+        textOverrides,
+      });
       notify.dismiss(loadingId);
       notify.success('DOCX exportado correctamente.');
     } catch (err) {
@@ -48,7 +64,7 @@ export function useExport() {
     } finally {
       setExporting(false);
     }
-  }, [letter, setExporting, signature, signatureLayout]);
+  }, [letter, setExporting, signature, signatureLayout, documentSchema, textOverrides]);
 
   return { exportPDF, exportDOCX };
 }

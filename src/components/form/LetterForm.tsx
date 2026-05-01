@@ -19,13 +19,12 @@ import { AiGenerateButton } from './AiGenerateButton';
 import { SignaturePanel } from '@/components/signature/SignaturePanel';
 import { useFormStore } from '@/store/useFormStore';
 import { useAutosave } from '@/hooks/useAutosave';
-import { CLASSIFICATION_OPTIONS, DOCUMENT_TYPES, GENDER_OPTIONS } from '@/data/constants';
+import { DOCUMENT_TYPES, GENDER_OPTIONS } from '@/data/constants';
 import { sampleLetter } from '@/data/defaultLetter';
 import { validateLetter } from '@/services/validators';
 import { generateContent } from '@/services/aiService';
 import { parseProjectFromString } from '@/utils/parseProject';
 import { notify } from '@/utils/toast';
-import type { Classification } from '@/types/metadata';
 import type { DocumentType, Gender } from '@/types/intern';
 
 export function LetterForm() {
@@ -163,7 +162,6 @@ export function LetterForm() {
       <FormSection title="Experto de contacto" icon={<FaUserTie className="text-[var(--color-accent)]" />} defaultOpen={false}>
         <TextField label="Nombre completo" value={letter.instructor.fullName} onChange={(v) => setInstructor({ fullName: v })} required />
         <TextField label="Teléfono" value={letter.instructor.phone} onChange={(v) => setInstructor({ phone: v })} />
-        <TextField label="Extensión" value={letter.instructor.extension} onChange={(v) => setInstructor({ extension: v })} />
         <TextField label="Correo" value={letter.instructor.email} onChange={(v) => setInstructor({ email: v })} error={errors['instructor.email']} />
       </FormSection>
 
@@ -172,25 +170,19 @@ export function LetterForm() {
         <TextField label="Cargo" value={letter.signer.position} onChange={(v) => setSigner({ position: v })} required />
       </FormSection>
 
-      <FormSection title="Firma digital" icon={<FaSignature className="text-[var(--color-accent)]" />} defaultOpen={false}>
-        <SignaturePanel />
-      </FormSection>
-
       <FormSection title="Proyectó" icon={<FaPen className="text-[var(--color-accent)]" />} defaultOpen={false}>
         <TextField label="Nombre completo" value={letter.drafter.fullName} onChange={(v) => setDrafter({ fullName: v })} />
         <TextField label="Rol / cargo" value={letter.drafter.role} onChange={(v) => setDrafter({ role: v })} />
+      </FormSection>
+
+      <FormSection title="Firma digital (Proyectó)" icon={<FaSignature className="text-[var(--color-accent)]" />} defaultOpen={false}>
+        <SignaturePanel />
       </FormSection>
 
       <FormSection title="Metadata de la carta" icon={<FaFileAlt className="text-[var(--color-accent)]" />} defaultOpen={false}>
         <TextField label="Número de documento" value={letter.metadata.documentNumber} onChange={(v) => setMetadata({ documentNumber: v })} required />
         <TextField label="Ciudad" value={letter.metadata.city} onChange={(v) => setMetadata({ city: v })} required />
         <DateField label="Fecha de emisión" value={letter.metadata.issueDate} onChange={(v) => setMetadata({ issueDate: v })} required error={errors['metadata.issueDate']} />
-        <SelectField
-          label="Clasificación"
-          value={letter.metadata.classification}
-          onChange={(v) => setMetadata({ classification: v as Classification })}
-          options={CLASSIFICATION_OPTIONS}
-        />
       </FormSection>
     </div>
   );

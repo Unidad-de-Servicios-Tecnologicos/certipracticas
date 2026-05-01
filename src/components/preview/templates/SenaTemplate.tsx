@@ -6,36 +6,12 @@ import { getGenderTerms } from '@/services/letterFormatter';
 import { isEmailValid } from '@/services/validators';
 import { formatDateLong } from '@/utils/formatDate';
 import { EditableBlock } from '@/components/editor/EditableBlock';
+import { LogoCanvasLayer } from '@/components/editor/LogoCanvasLayer';
 import { useFormStore } from '@/store/useFormStore';
 import { useAppStore } from '@/store/useAppStore';
-import { FaInstagram, FaFacebook, FaYoutube, FaLinkedinIn } from 'react-icons/fa';
-import { FaXTwitter } from 'react-icons/fa6';
 
 const PAGE_STYLE =
   'relative mx-auto bg-white text-black shadow-md print:shadow-none w-[794px] min-h-[1123px] px-[96px] pt-12 pb-[130px] font-sans text-[14px]';
-
-function CenteredLogoHeader() {
-  return (
-    <div className="w-full flex justify-center mb-8">
-      <img src="/logo.png" alt="SENA" className="h-[68px] w-auto" />
-    </div>
-  );
-}
-
-function SocialIconsRow() {
-  return (
-    <div className="flex items-center justify-center gap-2 text-gray-600 text-[12px]">
-      <FaInstagram size={13} />
-      <FaFacebook size={13} />
-      <FaXTwitter size={13} />
-      <FaYoutube size={13} />
-      <FaLinkedinIn size={13} />
-      <span className="ml-1 font-bold text-[10.5px]">@SENAComunica</span>
-      <span className="mx-1.5 text-gray-400">·</span>
-      <span className="text-[10.5px]">www.sena.edu.co</span>
-    </div>
-  );
-}
 
 function Footer({ letter }: { letter: Letter }) {
   const regional = letter.center.regional || '[Regional]';
@@ -51,9 +27,7 @@ function Footer({ letter }: { letter: Letter }) {
         <p>Regional {regional}/ {centerName}</p>
         <p>{address} - PBX {phone}</p>
       </div>
-      <div className="border-t border-gray-200 py-2 px-24 flex items-center justify-center">
-        <SocialIconsRow />
-      </div>
+      <div className="border-t border-gray-200" />
       {(docCode || docVersion) && (
         <span className="absolute right-2 bottom-8 origin-bottom-right -rotate-90 text-[9px] text-gray-400 tracking-wider whitespace-nowrap">
           {docCode} {docVersion}
@@ -96,7 +70,7 @@ function BodyParagraph({ letter }: { letter: Letter }) {
       <strong>{program}</strong>; realizó su práctica en la modalidad de{' '}
       {modality} en {placeOfPractice} desde el{' '}
       <strong>{startDate}</strong>, hasta el{' '}
-      <strong>{endDate}</strong>, participó en los siguientes proyectos:
+      <strong>{endDate}</strong>, participó como apoyo técnico en los siguientes proyectos:
     </p>
   );
 }
@@ -223,10 +197,11 @@ export function SenaTemplate({ letter, signature, signatureLayout }: SenaTemplat
     <div className="flex flex-col items-center gap-6">
       {/* Página 1 */}
       <article data-letter-page="1" className={PAGE_STYLE}>
+        <LogoCanvasLayer />
         {signature && signatureLayout && (
           <SignatureOverlay signature={signature} signatureLayout={signatureLayout} />
         )}
-        <CenteredLogoHeader />
+        <div className="mb-8" />
 
         {/* Número de radicado */}
         <div className="text-center text-[14px] mb-8">

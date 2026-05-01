@@ -3,11 +3,17 @@ import { useFormStore } from '@/store/useFormStore';
 import { useAppStore } from '@/store/useAppStore';
 import { SenaTemplate } from './templates/SenaTemplate';
 import type { EditorMode } from '@/store/useAppStore';
+import type { LogoNode } from '@/types/editorSchema';
 
 export const LetterPreview = forwardRef<HTMLDivElement>((_props, forwardedRef) => {
   const letter = useFormStore((s) => s.letter);
   const signature = useFormStore((s) => s.signature);
   const signatureLayout = useFormStore((s) => s.signatureLayout);
+  const hasCanvasLogos = useFormStore((s) =>
+    s.documentSchema.pages[0].elements.some(
+      (node): node is LogoNode => node.type === 'logo' && node.src.trim().length > 0
+    )
+  );
   const canvasHtml = useFormStore((s) => s.canvasHtml);
   const setCanvasHtml = useFormStore((s) => s.setCanvasHtml);
   const zoom = useAppStore((s) => s.zoom);
@@ -79,7 +85,7 @@ export const LetterPreview = forwardRef<HTMLDivElement>((_props, forwardedRef) =
       {/* React-rendered template — hidden during canvas edit */}
       <div ref={reactRef} style={{ display: showReact ? 'block' : 'none' }}>
         {showReact && (
-          canvasHtml && editorMode === 'preview' ? (
+          canvasHtml && editorMode === 'preview' && !hasCanvasLogos ? (
             <div dangerouslySetInnerHTML={{ __html: canvasHtml }} />
           ) : (
             <SenaTemplate letter={letter} signature={signature} signatureLayout={signatureLayout} />

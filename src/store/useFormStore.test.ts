@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { useFormStore } from './useFormStore';
 import { emptyLetter, sampleLetter } from '@/data/defaultLetter';
+import { createDefaultDocumentSchema } from '@/services/editorSchemaService';
 
 const emptyProject = { code: '', name: '', description: '' };
 
@@ -9,6 +10,10 @@ describe('useFormStore', () => {
     useFormStore.setState({
       letter: structuredClone(emptyLetter),
       signature: null,
+      signatureLayout: { xPct: 50, yPct: 78, scale: 1, rotationDeg: 0, align: 'center' },
+      documentSchema: createDefaultDocumentSchema(),
+      selectedElementId: null,
+      schemaHistory: { past: [], future: [] },
       textOverrides: {},
     });
   });
@@ -66,11 +71,6 @@ describe('useFormStore', () => {
     expect(useFormStore.getState().letter).toEqual(emptyLetter);
   });
 
-  it('setMetadata updates classification', () => {
-    useFormStore.getState().setMetadata({ classification: 'reserved' });
-    expect(useFormStore.getState().letter.metadata.classification).toBe('reserved');
-  });
-
   it('setSignature stores signature data', () => {
     const sig = { method: 'drawn' as const, dataUrl: 'data:image/png;base64,abc', createdAt: '2024-01-01T00:00:00.000Z' };
     useFormStore.getState().setSignature(sig);
@@ -84,5 +84,33 @@ describe('useFormStore', () => {
     expect(useFormStore.getState().textOverrides['haceConstar']).toBe('CERTIFICA QUE:');
     useFormStore.getState().resetTextOverrides();
     expect(useFormStore.getState().textOverrides).toEqual({});
+  });
+
+  it('handles logo nodes and undo/redo history', () => {
+    const store = useFormStore.getState();
+    store.addLogoNode({ src: 'data:image/png;base64,abc', name: 'Main logo', section: 'header' });
+    const firstLogo = useFormStore
+      .getState()
+      .documentSchema.pages[0].elements.find((n) => n.type === 'logo');
+    expect(firstLogo).toBeDefined();
+    if (!firstLogo || firstLogo.type !== 'logo') return;
+
+    store.updateLogoNode(firstLogo.id, { opacity: 0.5, xPct: 25 });
+    const updated = useFormStore
+      .getState()
+      .documentSchema.pages[0].elements.find((n) => n.type === 'logo' && n.id === firstLogo.id);
+    expect(updated?.type === 'logo' ? updated.opacity : 0).toBe(0.5);
+
+    store.undoCanvas();
+    const undone = useFormStore
+      .getState()
+      .documentSchema.pages[0].elements.find((n) => n.type === 'logo' && n.id === firstLogo.id);
+    expect(undone?.type === 'logo' ? undone.opacity : 0).not.toBe(0.5);
+
+    store.redoCanvas();
+    const redone = useFormStore
+      .getState()
+      .documentSchema.pages[0].elements.find((n) => n.type === 'logo' && n.id === firstLogo.id);
+    expect(redone?.type === 'logo' ? redone.opacity : 0).toBe(0.5);
   });
 });

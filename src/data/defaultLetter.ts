@@ -32,24 +32,22 @@ export const emptyLetter: Letter = {
     performanceReview: '',
   },
   instructor: {
-    fullName: '',
-    phone: '',
-    extension: '',
-    email: '',
+    fullName: 'Jorge Bolaños González',
+    phone: '317 7524249',
+    email: 'jybolanos@sena.edu.co',
   },
   signer: {
-    fullName: '',
-    position: '',
+    fullName: 'Jorge Hernán Vélez Gallego',
+    position: 'Subdirector (E)',
   },
   drafter: {
-    fullName: '',
-    role: '',
+    fullName: 'Jorge Yimy Bolaños González',
+    role: 'Experto Tecnologías Virtuales Tecnoparque',
   },
   metadata: {
-    documentNumber: '',
+    documentNumber: '59402',
     city: 'Medellín',
     issueDate: todayISO(),
-    classification: 'public',
   },
 };
 
@@ -60,7 +58,7 @@ export const sampleLetter: Letter = {
     documentType: 'C.C.',
     documentNumber: '1,013,337,225',
     documentCity: 'Medellín Antioquia',
-    program: 'Tecnología en Análisis y Desarrollo de Sistemas de Información',
+    program: 'Tecnología en Análisis y Desarrollo de Software',
   },
   center: {
     name: 'Centro de Servicios y Gestión Empresarial',
@@ -72,8 +70,8 @@ export const sampleLetter: Letter = {
   },
   period: {
     duration: 'seis meses',
-    startDate: '2023-07-17',
-    endDate: '2024-01-16',
+    startDate: '2023-06-01',
+    endDate: '2026-12-31',
     modality: 'Contrato de aprendizaje',
     unit: '',
     area: 'Tecnoparque Nodo Medellín',
@@ -96,8 +94,7 @@ export const sampleLetter: Letter = {
   },
   instructor: {
     fullName: 'Jorge Bolaños González',
-    phone: '6045760000',
-    extension: '42253',
+    phone: '317 7524249',
     email: 'jybolanos@sena.edu.co',
   },
   signer: {
@@ -111,7 +108,6 @@ export const sampleLetter: Letter = {
   metadata: {
     documentNumber: '59402',
     city: 'Medellín',
-    issueDate: '2024-02-13',
-    classification: 'public',
+    issueDate: '2026-06-01',
   },
 };

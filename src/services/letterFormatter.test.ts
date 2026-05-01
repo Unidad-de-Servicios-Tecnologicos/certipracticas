@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildBodyParagraph,
-  buildClassificationLabel,
   buildClosing,
   buildDrafterLine,
   buildFooterLine,
@@ -28,22 +27,6 @@ describe('letterFormatter', () => {
     expect(body).toContain(sampleLetter.intern.documentNumber);
     expect(body).toContain('17 de julio de 2023');
     expect(body).toContain('16 de enero de 2024');
-  });
-
-  it('classification labels map to Spanish', () => {
-    expect(buildClassificationLabel({ ...sampleLetter })).toBe('Pública');
-    expect(
-      buildClassificationLabel({
-        ...sampleLetter,
-        metadata: { ...sampleLetter.metadata, classification: 'classified' },
-      })
-    ).toBe('Clasificada');
-    expect(
-      buildClassificationLabel({
-        ...sampleLetter,
-        metadata: { ...sampleLetter.metadata, classification: 'reserved' },
-      })
-    ).toBe('Reservada');
   });
 
   it('closing, instructor, drafter and footer lines render content', () => {

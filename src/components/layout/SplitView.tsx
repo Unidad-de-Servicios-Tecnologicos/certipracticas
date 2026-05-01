@@ -72,10 +72,10 @@ export function SplitView({ left, right, className }: SplitViewProps) {
   return (
     <div
       ref={containerRef}
-      className={cn('flex h-full w-full flex-col lg:flex-row', className)}
+      className={cn('flex w-full flex-col lg:h-full lg:flex-row', className)}
       style={{ '--left-width': `${leftWidth}%` } as React.CSSProperties}
     >
-      <div className="order-2 flex-1 overflow-auto border-t border-[var(--color-border)] bg-[var(--color-bg-primary)] lg:order-1 lg:w-[var(--left-width)] lg:flex-none lg:border-t-0">
+      <div className="order-2 flex-none border-t border-[var(--color-border)] bg-[var(--color-bg-primary)] lg:order-1 lg:w-[var(--left-width)] lg:flex-none lg:overflow-auto lg:border-t-0">
         {left}
       </div>
       
@@ -88,7 +88,7 @@ export function SplitView({ left, right, className }: SplitViewProps) {
         <div className="h-4 w-0.5 bg-[var(--color-bg-primary)] rounded-full opacity-50" />
       </div>
 
-      <div className="order-1 flex-1 overflow-auto bg-[var(--color-bg-tertiary)] lg:order-3">
+      <div className="order-1 flex-none bg-[var(--color-bg-tertiary)] lg:order-3 lg:flex-1 lg:overflow-auto">
         {right}
       </div>
     </div>

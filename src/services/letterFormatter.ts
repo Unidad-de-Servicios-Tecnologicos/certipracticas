@@ -48,20 +48,6 @@ export function buildBodyParagraph(letter: Letter): string {
   return `Que, cumplidos ${val(period.duration, 'Duración')} desde el ${startLong} al ${endLong}, ${terms.joven} ${val(intern.fullName, 'Nombre completo')}, ${terms.identificado} con ${val(intern.documentType, 'Tipo de documento')}: ${val(intern.documentNumber, 'Número de documento')} ${terms.expedida} en ${val(intern.documentCity, 'Ciudad de expedición')}, finalizó su proceso de etapa productiva bajo la modalidad de ${val(period.modality, 'Modalidad')}, en el ${val(center.name, 'Nombre del centro')} donde desarrolló su práctica en la ${val(period.unit, 'Unidad')} en el área de ${val(period.area, 'Área')} como ${val(intern.program, 'Programa')} del ${val(center.name, 'Nombre del centro')}.`;
 }
 
-export function buildClassificationLabel(letter: Letter): string {
-  if (!letter.metadata.classification) return '[Clasificación]';
-  switch (letter.metadata.classification) {
-    case 'public':
-      return 'Pública';
-    case 'classified':
-      return 'Clasificada';
-    case 'reserved':
-      return 'Reservada';
-    default:
-      return '[Clasificación]';
-  }
-}
-
 export function buildActivitiesIntro(letter: Letter): string {
   const terms = getGenderTerms(letter.intern.gender);
   return `Dentro de las actividades realizadas por ${terms.practicante} en la ${val(letter.period.area, 'Área')} se encuentran:`;

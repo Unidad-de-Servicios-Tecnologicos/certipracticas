@@ -12,10 +12,12 @@ export function GeneratorPage() {
     <SplitView
       left={<LetterForm />}
       right={
-        <div className="flex h-full flex-col">
+        <div className="flex min-h-[60vh] flex-col lg:h-full">
           <CanvasEditorToolbar />
-          <div className="flex-1 overflow-auto p-6">
-            <LetterPreview ref={previewRef} />
+          <div className="flex-1 overflow-auto p-2 sm:p-4 lg:p-6">
+            <div className="flex justify-center overflow-x-auto">
+              <LetterPreview ref={previewRef} />
+            </div>
           </div>
           <ExportBar previewRef={previewRef} />
         </div>
