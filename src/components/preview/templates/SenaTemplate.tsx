@@ -189,9 +189,6 @@ export function SenaTemplate({ letter, signature, signatureLayout }: SenaTemplat
   const issueDate = formatDateLong(letter.metadata.issueDate) || '[Fecha de expedición]';
   const city = letter.metadata.city || '[Ciudad]';
 
-  const ext = letter.instructor.extension?.trim()
-    ? ` extensión ${letter.instructor.extension.trim()}`
-    : '';
 
   return (
     <div className="flex flex-col items-center gap-6">
@@ -245,7 +242,7 @@ export function SenaTemplate({ letter, signature, signatureLayout }: SenaTemplat
               as="span"
             />{' '}
             <strong>{letter.instructor.fullName || '[Nombre del experto]'}</strong>, en el teléfono{' '}
-            {letter.instructor.phone || '[Teléfono]'}{ext}, o en correo electrónico{' '}
+            {letter.instructor.phone || '[Teléfono]'}, o en correo electrónico{' '}
             <InstructorEmail email={letter.instructor.email} />
           </p>
 

@@ -64,8 +64,7 @@ export function buildClosing(letter: Letter): string {
 
 export function buildInstructorLine(letter: Letter): string {
   const { instructor } = letter;
-  const ext = instructor.extension?.trim() ? ` extensión ${instructor.extension.trim()}` : '';
-  return `Instructor de etapa productiva: ${val(instructor.fullName, 'Nombre completo')} · Tel: ${val(instructor.phone, 'Teléfono')}${ext} · ${val(instructor.email, 'Email')}`;
+  return `Instructor de etapa productiva: ${val(instructor.fullName, 'Nombre completo')} · Tel: ${val(instructor.phone, 'Teléfono')} · ${val(instructor.email, 'Email')}`;
 }
 
 export function formatProject(project: Project): string {
