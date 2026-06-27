@@ -43,7 +43,7 @@ export function LetterForm() {
   const reset = useFormStore((s) => s.reset);
   const loadSample = useFormStore((s) => s.loadSample);
 
-  const saveStatus = useAutosave(letter);
+  const { savedAgoLabel } = useAutosave();
   const errors = useMemo(() => validateLetter(letter), [letter]);
 
   const handleGenerateProjects = async () => {
@@ -72,8 +72,7 @@ export function LetterForm() {
     <div className="flex flex-col gap-4 p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
-          {saveStatus === 'saving' && <span>Guardando…</span>}
-          {saveStatus === 'saved' && <span>Guardado ✓</span>}
+          <span>{savedAgoLabel}</span>
         </div>
         <div className="flex gap-2">
           <Button size="sm" variant="ghost" onClick={() => loadSample(sampleLetter)}>

@@ -83,4 +83,20 @@
   .delay-300 { animation-delay: 300ms; }
 }
 
+@keyframes sectionIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-safe\:animate-\[sectionIn_0\.25s_ease\],
+  .motion-safe\:animate-\[fadeIn_0\.3s_ease\] {
+    animation: none !important;
+  }
+}
 

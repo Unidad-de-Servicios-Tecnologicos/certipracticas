@@ -7,7 +7,7 @@ import { formatDateFileSafe, formatDateLong } from '@/utils/formatDate';
 import { getGenderTerms } from '@/services/letterFormatter';
 
 const L = 25; const R = 185; const CX = 105; const MW = 160;
-const PW = 210; const PH = 297; const PX = 0.2646;
+const PX = 0.2646;
 const GREEN: [number, number, number] = [90, 158, 26];
 const BLACK: [number, number, number] = [0, 0, 0];
 

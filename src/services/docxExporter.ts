@@ -35,7 +35,8 @@ function v(value: string | undefined | null, field: string): string {
 
 async function dataFromUrl(url: string): Promise<Uint8Array | null> {
   try {
-    return new Uint8Array(await fetch(url).then((r) => r.arrayBuffer()));
+    const buffer = await fetch(url).then((r) => r.arrayBuffer());
+    return new Uint8Array(buffer);
   } catch { return null; }
 }
 
