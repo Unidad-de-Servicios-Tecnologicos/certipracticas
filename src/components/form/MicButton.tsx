@@ -68,7 +68,7 @@ export function MicButton({ value, onChange, disabled, className }: MicButtonPro
         aria-pressed={isListening}
         aria-label={tooltipLabel}
         className={cn(
-          'flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] border text-sm transition-colors',
+          'flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-[var(--radius-md)] border text-sm transition-colors',
           isListening
             ? 'bg-[var(--color-mic-active)] text-white border-transparent animate-mic-pulse'
             : 'bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] border-[var(--color-border)] hover:bg-[var(--color-bg-secondary)]',

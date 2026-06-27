@@ -1,15 +1,17 @@
-import type { ReactNode, TextareaHTMLAttributes } from 'react';
+import { useId, type ReactNode, type TextareaHTMLAttributes } from 'react';
 import { cn } from '@/utils/cn';
 
 export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string;
   error?: string;
+  hint?: string;
   rightSlot?: ReactNode;
 }
 
 export function Textarea({
   label,
   error,
+  hint,
   rightSlot,
   className,
   id,
@@ -18,11 +20,15 @@ export function Textarea({
   maxLength = 5000,
   ...rest
 }: TextareaProps) {
-  const inputId = id ?? rest.name;
+  const autoId = useId();
+  const inputId = id ?? rest.name ?? autoId;
+  const errorId = `${inputId}-error`;
+  const hintId = `${inputId}-hint`;
+
   return (
     <div className="flex flex-col gap-1">
       {label && (
-        <label htmlFor={inputId} className="text-sm font-medium text-[var(--color-text-secondary)]">
+        <label htmlFor={inputId} className="text-label text-[var(--color-muted-foreground)]">
           {label}
           {required && <span className="text-[var(--color-danger)]"> *</span>}
         </label>
@@ -34,11 +40,14 @@ export function Textarea({
           rows={rows}
           maxLength={maxLength}
           aria-invalid={!!error}
+          aria-describedby={
+            [error ? errorId : null, hint ? hintId : null].filter(Boolean).join(' ') || undefined
+          }
           className={cn(
-            'flex-1 rounded-[var(--radius-md)] border px-3 py-2 text-sm resize-y',
-            'bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]',
-            'border-[var(--color-border)] placeholder:text-[var(--color-text-secondary)]/60',
-            'focus:border-[var(--color-accent)] focus:outline-none',
+            'flex-1 resize-y rounded-[var(--radius-md)] border px-3 py-2 text-body-sm',
+            'bg-[var(--color-surface)] text-[var(--color-foreground)]',
+            'border-[var(--color-border)] placeholder:text-[var(--color-muted-foreground)]/60',
+            'focus:border-[var(--color-primary)] focus:outline-none',
             error && 'border-[var(--color-danger)]',
             className
           )}
@@ -46,7 +55,16 @@ export function Textarea({
         />
         {rightSlot}
       </div>
-      {error && <span className="text-xs text-[var(--color-danger)]">{error}</span>}
+      {hint && !error && (
+        <p id={hintId} className="text-caption text-[var(--color-muted-foreground)]">
+          {hint}
+        </p>
+      )}
+      {error && (
+        <span id={errorId} role="alert" className="text-caption text-[var(--color-danger)]">
+          {error}
+        </span>
+      )}
     </div>
   );
 }

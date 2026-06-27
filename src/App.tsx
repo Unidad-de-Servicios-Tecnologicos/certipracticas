@@ -1,11 +1,21 @@
-import { useState, useEffect } from 'react';
-import { GeneratorPage } from '@/pages/GeneratorPage';
-import { GeneratorPageV2 } from '@/pages/GeneratorPageV2';
-import { LandingPage } from '@/pages/LandingPage';
-import { AppShell } from '@/components/layout/AppShell';
+import { lazy, Suspense, useEffect, useState } from 'react';
+import { Spinner } from '@/components/ui/Spinner';
 import { useTheme } from '@/hooks/useTheme';
 
-const UX_V2 = import.meta.env.VITE_UX_V2 === 'true';
+const LandingPage = lazy(() =>
+  import('@/pages/LandingPage').then((m) => ({ default: m.LandingPage }))
+);
+const GeneratorPage = lazy(() =>
+  import('@/pages/GeneratorPageV2').then((m) => ({ default: m.GeneratorPageV2 }))
+);
+
+function PageLoader() {
+  return (
+    <div className="flex h-full min-h-screen items-center justify-center">
+      <Spinner size="lg" />
+    </div>
+  );
+}
 
 export function App() {
   useTheme();
@@ -17,16 +27,9 @@ export function App() {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
-  if (route === '#app') {
-    if (UX_V2) {
-      return <GeneratorPageV2 />;
-    }
-    return (
-      <AppShell>
-        <GeneratorPage />
-      </AppShell>
-    );
-  }
-
-  return <LandingPage />;
+  return (
+    <Suspense fallback={<PageLoader />}>
+      {route.startsWith('#app') ? <GeneratorPage /> : <LandingPage />}
+    </Suspense>
+  );
 }

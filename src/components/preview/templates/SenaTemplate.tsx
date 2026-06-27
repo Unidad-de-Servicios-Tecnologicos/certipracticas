@@ -2,7 +2,7 @@ import type { PointerEvent as ReactPointerEvent } from 'react';
 import type { Letter } from '@/types/letter';
 import type { Project } from '@/types/activities';
 import type { SignatureData, SignatureLayout } from '@/types/signature';
-import { getGenderTerms } from '@/services/letterFormatter';
+import { getGenderTerms, buildStrengthsIntro } from '@/services/letterFormatter';
 import { isEmailValid } from '@/services/validators';
 import { formatDateLong } from '@/utils/formatDate';
 import { EditableBlock } from '@/components/editor/EditableBlock';
@@ -181,6 +181,8 @@ export function SenaTemplate({ letter, signature, signatureLayout }: SenaTemplat
   const tasks = letter.activities.tasks.filter(
     (p) => p.code.trim() || p.name.trim() || p.description.trim()
   );
+  const strengths = letter.activities.technicalStrengths.filter((s) => s.trim());
+  const performanceReview = letter.activities.performanceReview.trim();
 
   const position = (letter.signer.position || '[Cargo del firmante]').toUpperCase();
   const centerName = (letter.center.name || '[Centro]').toUpperCase();
@@ -233,6 +235,23 @@ export function SenaTemplate({ letter, signature, signatureLayout }: SenaTemplat
               <li className="text-slate-400 italic">[Proyectos realizados]</li>
             )}
           </ol>
+
+          {strengths.length > 0 && (
+            <div className="mb-6 text-justify">
+              <p className="mb-2 font-semibold">{buildStrengthsIntro()}</p>
+              <ul className="list-disc pl-8 space-y-1">
+                {strengths.map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {performanceReview && (
+            <p className="mb-6 text-justify leading-relaxed">
+              <strong>Evaluación de desempeño:</strong> {performanceReview}
+            </p>
+          )}
 
           {/* Información de contacto del experto */}
           <p className="mb-6 text-justify">

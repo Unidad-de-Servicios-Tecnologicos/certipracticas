@@ -5,10 +5,12 @@ import {
   buildDrafterLine,
   buildFooterLine,
   buildInstructorLine,
+  buildStrengthsIntro,
   buildSubtitle,
   buildTitle,
 } from './letterFormatter';
 import { sampleLetter } from '@/data/defaultLetter';
+import { formatDateLong } from '@/utils/formatDate';
 
 describe('letterFormatter', () => {
   it('title includes center name uppercased', () => {
@@ -25,8 +27,8 @@ describe('letterFormatter', () => {
     const body = buildBodyParagraph(sampleLetter);
     expect(body).toContain(sampleLetter.intern.fullName);
     expect(body).toContain(sampleLetter.intern.documentNumber);
-    expect(body).toContain('17 de julio de 2023');
-    expect(body).toContain('16 de enero de 2024');
+    expect(body).toContain(formatDateLong(sampleLetter.period.startDate));
+    expect(body).toContain(formatDateLong(sampleLetter.period.endDate));
   });
 
   it('closing, instructor, drafter and footer lines render content', () => {
@@ -34,5 +36,9 @@ describe('letterFormatter', () => {
     expect(buildInstructorLine(sampleLetter)).toContain(sampleLetter.instructor.email);
     expect(buildDrafterLine(sampleLetter)).toContain('Proyectó');
     expect(buildFooterLine(sampleLetter)).toContain(sampleLetter.center.documentCode);
+  });
+
+  it('strengths intro is stable for preview', () => {
+    expect(buildStrengthsIntro()).toBe('Demostró fortalezas Técnicas en:');
   });
 });

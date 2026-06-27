@@ -45,14 +45,25 @@ export function LandingPage() {
 
         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto animate-fade-in-up delay-300 opacity-0" style={{ animationFillMode: 'forwards' }}>
           <a
-            href="#app"
-            className="group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-2xl bg-[var(--color-text-primary)] text-[var(--color-bg-primary)] px-8 py-4 text-lg font-bold transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-[var(--color-accent)]/25 active:scale-95"
+            href="#app?start=blank"
+            className="group relative inline-flex items-center justify-center gap-3 overflow-hidden rounded-2xl bg-[var(--color-foreground)] text-[var(--color-background)] px-8 py-4 text-lg font-bold transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-[var(--color-primary)]/25 active:scale-95"
           >
             <span className="relative z-10 flex items-center gap-2">
-              Comenzar a Crear
+              Empezar vacío
               <FiArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
             </span>
-            <div className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-[var(--color-bg-secondary)]/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
+          </a>
+          <a
+            href="#app?start=continue"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-4 text-base font-semibold transition-all hover:bg-[var(--color-muted)]"
+          >
+            Continuar borrador
+          </a>
+          <a
+            href="#app?start=demo"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--color-primary)] px-6 py-4 text-base font-semibold text-[var(--color-primary)] transition-all hover:bg-[var(--color-primary)]/10"
+          >
+            Ver demo
           </a>
         </div>
         

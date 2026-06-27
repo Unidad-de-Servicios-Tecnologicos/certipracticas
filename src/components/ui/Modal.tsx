@@ -1,5 +1,6 @@
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { cn } from '@/utils/cn';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 export interface ModalProps {
   open: boolean;
@@ -10,6 +11,10 @@ export interface ModalProps {
 }
 
 export function Modal({ open, onClose, title, children, className }: ModalProps) {
+  const panelRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
+  useFocusTrap(panelRef, open);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -23,25 +28,30 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
 
   return (
     <div
-      role="dialog"
-      aria-modal="true"
+      role="presentation"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       onClick={onClose}
     >
       <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? titleId : undefined}
         className={cn(
-          'max-h-[90vh] w-full max-w-lg overflow-auto rounded-[var(--radius-lg)] shadow-lg',
-          'bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] border border-[var(--color-border)]',
+          'max-h-[90vh] w-full max-w-lg overflow-auto rounded-[var(--radius-lg)] shadow-[var(--shadow-lg)]',
+          'bg-[var(--color-surface)] text-[var(--color-foreground)] border border-[var(--color-border)]',
           className
         )}
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
-          <header className="border-b border-[var(--color-border)] p-4">
-            <h2 className="text-lg font-semibold">{title}</h2>
+          <header className="border-b border-[var(--color-border)] p-[var(--space-4)]">
+            <h2 id={titleId} className="text-h3">
+              {title}
+            </h2>
           </header>
         )}
-        <div className="p-4">{children}</div>
+        <div className="p-[var(--space-4)]">{children}</div>
       </div>
     </div>
   );

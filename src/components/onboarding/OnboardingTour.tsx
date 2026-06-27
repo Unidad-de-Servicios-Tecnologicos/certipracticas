@@ -41,7 +41,24 @@ export function useOnboarding() {
     setShow(false);
   }
 
-  return { showOnboarding: show, completeOnboarding: complete, dismissOnboarding: complete };
+  function relaunch() {
+    try {
+      localStorage.removeItem(ONBOARDING_KEY);
+    } catch {
+      /* ignore */
+    }
+    setShow(true);
+  }
+
+  return { showOnboarding: show, completeOnboarding: complete, dismissOnboarding: complete, relaunchOnboarding: relaunch };
+}
+
+export function resetOnboarding() {
+  try {
+    localStorage.removeItem(ONBOARDING_KEY);
+  } catch {
+    /* ignore */
+  }
 }
 
 export interface OnboardingTourProps {

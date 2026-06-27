@@ -3,7 +3,7 @@ import { cn } from '@/utils/cn';
 
 export interface BadgeProps {
   children: ReactNode;
-  kind?: 'accent' | 'neutral' | 'danger' | 'warning';
+  kind?: 'accent' | 'neutral' | 'danger' | 'warning' | 'info';
   className?: string;
 }
 
@@ -12,6 +12,7 @@ const kinds = {
   neutral: 'bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)]',
   danger: 'bg-[var(--color-danger)]/15 text-[var(--color-danger)]',
   warning: 'bg-[var(--color-warning)]/15 text-[var(--color-warning)]',
+  info: 'bg-[var(--color-info)]/15 text-[var(--color-info)]',
 } as const;
 
 export function Badge({ children, kind = 'neutral', className }: BadgeProps) {

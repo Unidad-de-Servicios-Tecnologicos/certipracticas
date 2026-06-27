@@ -3,6 +3,7 @@ import { AppShellV2 } from '@/components/layout/AppShellV2';
 import { SidebarNav } from '@/components/layout/SidebarNav';
 import { MainContent } from '@/components/layout/MainContent';
 import { PreviewPanel } from '@/components/layout/PreviewPanel';
+import { ResizablePanels } from '@/components/layout/ResizablePanels';
 import { MobileTabLayout } from '@/components/layout/MobileTabLayout';
 import { MobileSectionCarousel } from '@/components/layout/MobileSectionCarousel';
 import { LetterFormV2 } from '@/components/form/LetterFormV2';
@@ -18,8 +19,15 @@ import { useExport } from '@/hooks/useExport';
 import { useAppStore } from '@/store/useAppStore';
 import { isValidLetter } from '@/services/validators';
 import { useFormStore } from '@/store/useFormStore';
+import { sampleLetter } from '@/data/defaultLetter';
 import { notify } from '@/utils/toast';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
+
+function parseStartFromHash(): string | null {
+  const [, query] = window.location.hash.split('?');
+  if (!query) return null;
+  return new URLSearchParams(query).get('start');
+}
 
 export function GeneratorPageV2() {
   const previewRef = useRef<HTMLDivElement>(null);
@@ -39,12 +47,24 @@ export function GeneratorPageV2() {
     setSidebarCollapsed(isTablet);
   }, [isTablet, setSidebarCollapsed]);
 
+  useEffect(() => {
+    const start = parseStartFromHash();
+    if (!start) return;
+
+    const { reset, loadSample } = useFormStore.getState();
+    if (start === 'blank') reset();
+    else if (start === 'demo') loadSample(sampleLetter);
+    else if (start === 'continue') notify.success('Borrador restaurado.');
+
+    window.location.hash = '#app';
+  }, []);
+
   const letter = useFormStore((s) => s.letter);
   const { exportPDF, exportDOCX } = useExport();
   const { percentage, pendingCount, errorCount, errors, firstErrorSection, sections } =
     useFormProgress();
   const completedCount = sections.filter((s) => s.complete).length;
-  const { showOnboarding, completeOnboarding } = useOnboarding();
+  const { showOnboarding, completeOnboarding, relaunchOnboarding } = useOnboarding();
   const { showStartChoice, dismissStartChoice } = useStartChoice();
 
   const guardExport = useCallback(
@@ -88,7 +108,9 @@ export function GeneratorPageV2() {
     </>
   );
 
-  const previewBlock = <PreviewPanel previewRef={previewRef} />;
+  const previewBlock = (
+    <PreviewPanel previewRef={previewRef} onBeforeExport={handleBeforeExport} />
+  );
 
   return (
     <AppShellV2 previewRef={previewRef} onBeforeExport={handleBeforeExport} onOpenSettings={handleOpenSettings}>
@@ -105,8 +127,7 @@ export function GeneratorPageV2() {
         </div>
         <div className="flex min-h-0 flex-1">
           <SidebarNav collapsed={sidebarCollapsed} />
-          <div className="min-w-0 flex-1">{formBlock}</div>
-          <div className="hidden min-w-0 flex-1 lg:flex lg:max-w-[50%]">{previewBlock}</div>
+          <ResizablePanels className="min-w-0 flex-1" left={formBlock} right={previewBlock} />
         </div>
       </div>
 
@@ -134,16 +155,14 @@ export function GeneratorPageV2() {
         onClose={() => setCommandPaletteOpen(false)}
         onExportPDF={() => guardExport(() => exportPDF(previewRef.current))}
         onExportDOCX={() => guardExport(() => exportDOCX(previewRef.current))}
+        onRelaunchTour={relaunchOnboarding}
       />
 
       <ShortcutsPanel open={shortcutsPanelOpen} onClose={() => setShortcutsOpen(false)} />
 
       <OnboardingTour open={showOnboarding && !showStartChoice} onComplete={completeOnboarding} />
 
-      <StartChoiceModal
-        open={showStartChoice}
-        onClose={dismissStartChoice}
-      />
+      <StartChoiceModal open={showStartChoice} onClose={dismissStartChoice} />
     </AppShellV2>
   );
 }

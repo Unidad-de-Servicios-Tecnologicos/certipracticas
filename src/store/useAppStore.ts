@@ -13,7 +13,6 @@ interface AppStore {
   editorMode: EditorMode;
   activeSection: FormSectionId;
   previewPage: number;
-  previewHasChanges: boolean;
   mobileTab: MobileTab;
   commandPaletteOpen: boolean;
   shortcutsPanelOpen: boolean;
@@ -26,7 +25,6 @@ interface AppStore {
   setEditorMode: (mode: EditorMode) => void;
   setActiveSection: (section: FormSectionId) => void;
   setPreviewPage: (page: number) => void;
-  setPreviewHasChanges: (value: boolean) => void;
   setMobileTab: (tab: MobileTab) => void;
   setCommandPaletteOpen: (open: boolean) => void;
   setShortcutsPanelOpen: (open: boolean) => void;
@@ -41,7 +39,6 @@ export const useAppStore = create<AppStore>((set) => ({
   editorMode: 'preview',
   activeSection: 'general',
   previewPage: 1,
-  previewHasChanges: false,
   mobileTab: 'form',
   commandPaletteOpen: false,
   shortcutsPanelOpen: false,
@@ -54,7 +51,6 @@ export const useAppStore = create<AppStore>((set) => ({
   setEditorMode: (mode) => set({ editorMode: mode }),
   setActiveSection: (section) => set({ activeSection: section }),
   setPreviewPage: (page) => set({ previewPage: page }),
-  setPreviewHasChanges: (value) => set({ previewHasChanges: value }),
   setMobileTab: (tab) => set({ mobileTab: tab }),
   setCommandPaletteOpen: (open) => set({ commandPaletteOpen: open }),
   setShortcutsPanelOpen: (open) => set({ shortcutsPanelOpen: open }),

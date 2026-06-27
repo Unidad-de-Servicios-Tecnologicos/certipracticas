@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { FORM_SECTIONS } from '@/data/formSections';
@@ -44,6 +45,13 @@ export interface ValidationSummaryProps {
 export function ValidationSummary({ open, errors, onClose, onForceExport }: ValidationSummaryProps) {
   const setActiveSection = useAppStore((s) => s.setActiveSection);
   const entries = Object.entries(errors);
+  const liveRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (open && entries.length > 0) {
+      liveRef.current?.focus();
+    }
+  }, [open, entries.length]);
 
   function goToField(key: string) {
     const sectionId = findSectionForError(key);
@@ -53,16 +61,25 @@ export function ValidationSummary({ open, errors, onClose, onForceExport }: Vali
 
   return (
     <Modal open={open} onClose={onClose} title="Campos pendientes">
-      <p className="mb-4 text-sm text-[var(--color-text-secondary)]">
-        Hay {entries.length} {entries.length === 1 ? 'campo' : 'campos'} por completar antes de exportar.
-      </p>
+      <div
+        ref={liveRef}
+        tabIndex={-1}
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+        className="outline-none"
+      >
+        <p className="mb-4 text-body-sm text-[var(--color-muted-foreground)]">
+          Hay {entries.length} {entries.length === 1 ? 'campo' : 'campos'} por completar antes de exportar.
+        </p>
+      </div>
       <ul className="mb-4 flex flex-col gap-2">
         {entries.map(([key, msg]) => (
           <li key={key}>
             <button
               type="button"
               onClick={() => goToField(key)}
-              className="text-left text-sm text-[var(--color-accent)] hover:underline"
+              className="min-h-[44px] text-left text-body-sm text-[var(--color-primary)] hover:underline"
             >
               {FIELD_LABELS[key] ?? key}: {msg}
             </button>

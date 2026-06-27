@@ -1,6 +1,7 @@
 import { cn } from '@/utils/cn';
 import { FORM_SECTIONS } from '@/data/formSections';
 import { ProgressBar } from '@/components/ui/ProgressBar';
+import { Badge } from '@/components/ui/Badge';
 import { useAppStore } from '@/store/useAppStore';
 import { useFormProgress } from '@/hooks/useFormProgress';
 import type { FormSectionId } from '@/types/formSection';
@@ -23,7 +24,7 @@ export function SidebarNav({ collapsed }: SidebarNavProps) {
   return (
     <nav
       className={cn(
-        'flex h-full flex-col border-r border-[var(--color-border)] bg-[var(--color-bg-secondary)]',
+        'flex h-full flex-col border-r border-[var(--color-border)] bg-[var(--color-sidebar)]',
         collapsed ? 'w-14' : 'w-60'
       )}
       aria-label="Secciones del formulario"
@@ -41,10 +42,10 @@ export function SidebarNav({ collapsed }: SidebarNavProps) {
                 onClick={() => setActiveSection(section.id as FormSectionId)}
                 title={collapsed ? section.label : undefined}
                 className={cn(
-                  'mb-0.5 flex w-full items-center gap-2 rounded-[var(--radius-md)] px-2 py-2 text-left text-sm transition-colors',
+                  'mb-0.5 flex min-h-[44px] w-full items-center gap-2 rounded-[var(--radius-md)] px-2 py-2 text-left text-body-sm transition-colors',
                   isActive
-                    ? 'bg-[var(--color-accent)]/10 font-medium text-[var(--color-accent)]'
-                    : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] hover:text-[var(--color-text-primary)]'
+                    ? 'bg-[var(--color-primary)]/10 font-medium text-[var(--color-primary)]'
+                    : 'text-[var(--color-muted-foreground)] hover:bg-[var(--color-muted)] hover:text-[var(--color-foreground)]'
                 )}
               >
                 <Icon className="shrink-0" size={14} aria-hidden />
@@ -52,12 +53,12 @@ export function SidebarNav({ collapsed }: SidebarNavProps) {
                   <>
                     <span className="flex-1 truncate">{section.label}</span>
                     {progress.hasErrors && (
-                      <span className="flex h-4 w-4 items-center justify-center rounded-full bg-[var(--color-danger)] text-[10px] text-white">
+                      <Badge kind="danger" className="h-5 min-w-5 justify-center px-1" aria-label="Con errores">
                         !
-                      </span>
+                      </Badge>
                     )}
                     {progress.complete && !progress.hasErrors && (
-                      <span className="text-[var(--color-accent)]" aria-label="Completa">
+                      <span className="text-[var(--color-primary)]" aria-label="Completa">
                         ✓
                       </span>
                     )}

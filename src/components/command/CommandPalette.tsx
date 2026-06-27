@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Modal } from '@/components/ui/Modal';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { FORM_SECTIONS } from '@/data/formSections';
 import { useAppStore } from '@/store/useAppStore';
 import { useFormStore } from '@/store/useFormStore';
@@ -10,10 +11,18 @@ export interface CommandPaletteProps {
   onClose: () => void;
   onExportPDF: () => void;
   onExportDOCX: () => void;
+  onRelaunchTour?: () => void;
 }
 
-export function CommandPalette({ open, onClose, onExportPDF, onExportDOCX }: CommandPaletteProps) {
+export function CommandPalette({
+  open,
+  onClose,
+  onExportPDF,
+  onExportDOCX,
+  onRelaunchTour,
+}: CommandPaletteProps) {
   const [query, setQuery] = useState('');
+  const [confirmNew, setConfirmNew] = useState(false);
   const setActiveSection = useAppStore((s) => s.setActiveSection);
   const toggleTheme = useAppStore((s) => s.toggleTheme);
   const setShortcutsPanelOpen = useAppStore((s) => s.setShortcutsPanelOpen);
@@ -35,56 +44,76 @@ export function CommandPalette({ open, onClose, onExportPDF, onExportDOCX }: Com
       { id: 'theme', label: 'Cambiar tema', run: toggleTheme },
       { id: 'shortcuts', label: 'Ver atajos de teclado', run: () => setShortcutsPanelOpen(true) },
       {
+        id: 'tour',
+        label: 'Ver tour de bienvenida',
+        run: () => onRelaunchTour?.(),
+      },
+      {
         id: 'new',
         label: 'Nuevo documento',
-        run: () => {
-          if (window.confirm('¿Crear documento nuevo?')) {
-            reset();
-            notify.success('Documento nuevo.');
-          }
-        },
+        run: () => setConfirmNew(true),
       },
     ],
-    [setActiveSection, onExportPDF, onExportDOCX, toggleTheme, setShortcutsPanelOpen, reset]
+    [setActiveSection, onExportPDF, onExportDOCX, toggleTheme, setShortcutsPanelOpen, onRelaunchTour]
   );
 
   const filtered = actions.filter((a) =>
     a.label.toLowerCase().includes(query.toLowerCase())
   );
 
-  function runAction(run: () => void) {
-    run();
+  function runAction(action: (typeof actions)[number]) {
+    if (action.id === 'new') {
+      setConfirmNew(true);
+      onClose();
+      return;
+    }
+    action.run();
     onClose();
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Acciones rápidas" className="max-w-md">
-      <input
-        autoFocus
-        type="search"
-        placeholder="Buscar acción…"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        className="mb-3 w-full rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-bg-primary)] px-3 py-2 text-sm"
+    <>
+      <Modal open={open} onClose={onClose} title="Acciones rápidas" className="max-w-md">
+        <input
+          autoFocus
+          type="search"
+          placeholder="Buscar acción…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="mb-3 w-full rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-body-sm"
+        />
+        <ul className="max-h-64 overflow-y-auto">
+          {filtered.map((action) => (
+            <li key={action.id}>
+              <button
+                type="button"
+                className="min-h-[44px] w-full rounded px-2 py-2 text-left text-body-sm hover:bg-[var(--color-muted)]"
+                onClick={() => runAction(action)}
+              >
+                {action.label}
+              </button>
+            </li>
+          ))}
+          {filtered.length === 0 && (
+            <li className="px-2 py-4 text-center text-body-sm text-[var(--color-muted-foreground)]">
+              Sin resultados
+            </li>
+          )}
+        </ul>
+      </Modal>
+      <ConfirmDialog
+        open={confirmNew}
+        title="Nuevo documento"
+        description="¿Crear documento nuevo? Se perderán los cambios actuales."
+        confirmLabel="Crear nuevo"
+        variant="danger"
+        onConfirm={() => {
+          reset();
+          notify.success('Documento nuevo.');
+          setConfirmNew(false);
+        }}
+        onCancel={() => setConfirmNew(false)}
       />
-      <ul className="max-h-64 overflow-y-auto">
-        {filtered.map((action) => (
-          <li key={action.id}>
-            <button
-              type="button"
-              className="w-full rounded px-2 py-2 text-left text-sm hover:bg-[var(--color-bg-tertiary)]"
-              onClick={() => runAction(action.run)}
-            >
-              {action.label}
-            </button>
-          </li>
-        ))}
-        {filtered.length === 0 && (
-          <li className="px-2 py-4 text-center text-sm text-[var(--color-text-secondary)]">
-            Sin resultados
-          </li>
-        )}
-      </ul>
-    </Modal>
+    </>
   );
 }

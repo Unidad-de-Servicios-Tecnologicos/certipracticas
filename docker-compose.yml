@@ -7,7 +7,6 @@ services:
         VITE_AI_PROVIDER: ${VITE_AI_PROVIDER:-gemini}
         VITE_GEMINI_API_KEY: ${VITE_GEMINI_API_KEY:-}
         VITE_GEMINI_MODEL: ${VITE_GEMINI_MODEL:-gemini-2.5-flash}
-        VITE_UX_V2: ${VITE_UX_V2:-true}
     image: certipracticas:latest
     container_name: certipracticas
     ports:
